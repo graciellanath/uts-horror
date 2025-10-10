@@ -6,6 +6,7 @@ TagManager:
   tags:
   - CinemachineTarget
   - Monster
+  - Movepoint
   layers:
   - Default
   - TransparentFX
