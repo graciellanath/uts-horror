@@ -10,20 +10,19 @@ public class playerfps : MonoBehaviour
 
     [Header("Movement Settings")]
     public float moveSpeed = 2f;
+    public float sprintMultiplier = 2f; // kecepatan tambahan saat sprint
 
     private float rotationY = 0f;
     private Transform cameraTransform;
     private CharacterController controller;
 
+    private bool isLooking = false; // apakah sedang mode look (klik mouse ditekan)
+
     void Start()
     {
-        // Ambil kamera yang jadi anak player
         cameraTransform = GetComponentInChildren<Camera>().transform;
-
-        // Ambil komponen CharacterController (capsule)
         controller = GetComponent<CharacterController>();
 
-        // Kunci dan sembunyikan kursor
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
     }
@@ -37,16 +36,32 @@ public class playerfps : MonoBehaviour
 
     void HandleMouseLook()
     {
-        float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity;
-        float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity;
+        // Aktifkan mode look saat mouse kanan ditekan (atau kiri, bisa diganti)
+        if (Input.GetMouseButtonDown(1)) // 1 = klik kanan, 0 = klik kiri
+        {
+            isLooking = true;
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+        }
+        else if (Input.GetMouseButtonUp(1))
+        {
+            isLooking = false;
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+        }
 
-        // Rotasi horizontal (putar badan)
-        transform.Rotate(Vector3.up * mouseX);
+        // Hanya rotasi kamera kalau sedang mode look
+        if (isLooking)
+        {
+            float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity;
+            float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity;
 
-        // Rotasi vertikal (lihat atas bawah)
-        rotationY -= mouseY;
-        rotationY = Mathf.Clamp(rotationY, minY, maxY);
-        cameraTransform.localRotation = Quaternion.Euler(rotationY, 0, 0);
+            transform.Rotate(Vector3.up * mouseX);
+
+            rotationY -= mouseY;
+            rotationY = Mathf.Clamp(rotationY, minY, maxY);
+            cameraTransform.localRotation = Quaternion.Euler(rotationY, 0, 0);
+        }
     }
 
     void HandleMovement()
@@ -54,15 +69,20 @@ public class playerfps : MonoBehaviour
         float moveX = Input.GetAxis("Horizontal");
         float moveZ = Input.GetAxis("Vertical");
 
+        float currentSpeed = moveSpeed;
+        if (Input.GetKey(KeyCode.LeftShift))
+        {
+            currentSpeed *= sprintMultiplier;
+        }
+
         Vector3 moveDir = transform.right * moveX + transform.forward * moveZ;
-        controller.Move(moveDir * moveSpeed * Time.deltaTime);
+        controller.Move(moveDir * currentSpeed * Time.deltaTime);
     }
 
     void UpdateCameraPosition()
     {
-        // Tempatkan kamera di tengah capsule (dalam tubuh)
         Vector3 camPos = transform.position;
-        camPos.y += controller.height * 0.5f - 0.1f; // sedikit di bawah atas capsule
+        camPos.y += controller.height * 0.5f - 0.1f;
         cameraTransform.position = camPos;
     }
 }

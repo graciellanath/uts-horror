@@ -4902,7 +4902,7 @@ CapsuleCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
@@ -4999,6 +4999,7 @@ MonoBehaviour:
   minY: -60
   maxY: 60
   moveSpeed: 2
+  sprintMultiplier: 2
 --- !u!54 &675265591
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -6905,6 +6906,12 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 6899769094566875523, guid: f3978c44f7fb36246b698fdea7f77528, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1831744433}
+    - targetCorrespondingSourceObject: {fileID: 6899769094566875523, guid: f3978c44f7fb36246b698fdea7f77528, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1831744438}
+    - targetCorrespondingSourceObject: {fileID: 6899769094566875523, guid: f3978c44f7fb36246b698fdea7f77528, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1831744437}
   m_SourcePrefab: {fileID: 100100000, guid: f3978c44f7fb36246b698fdea7f77528, type: 3}
 --- !u!1001 &899046085
 PrefabInstance:
@@ -14438,6 +14445,36 @@ CapsuleCollider:
   m_Height: 2.4126868
   m_Direction: 1
   m_Center: {x: 0.10570145, y: 1.0874329, z: 0}
+--- !u!114 &1831744437
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1831744432}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2a57f97da088c184cb931d2be1f9f889, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MonsterPatrol
+  patrolRadius: 10
+  patrolDelay: 3
+--- !u!114 &1831744438
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1831744432}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c6e22128fa4d4054c8cdaa1ee723085b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MonsterAI
+  player: {fileID: 0}
+  detectionRange: 10
+  attackRange: 2
+  patrolRadius: 10
 --- !u!1001 &1832545990
 PrefabInstance:
   m_ObjectHideFlags: 0
