@@ -3,21 +3,26 @@ using UnityEngine.SceneManagement;
 
 public class GameOverManager : MonoBehaviour
 {
+    private void Start()
+    {
+        Debug.Log("✅ GameOverManager aktif!");
+    }
+
     public void RetryGame()
     {
-        // Ulangi level saat ini
+        Debug.Log("Retry diklik!");
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
-    public void BackToMenu()
+    public void BackToMainMenu()
     {
-        // Kembali ke scene menu utama
+        Debug.Log("Balik ke menu utama!");
         SceneManager.LoadScene("MainMenu");
     }
 
     public void QuitGame()
     {
-        // Keluar dari game
+        Debug.Log("Keluar game!");
         Application.Quit();
     }
 }
