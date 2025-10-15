@@ -5,7 +5,7 @@ public class WinManager : MonoBehaviour
 {
     public void PlayAgain()
     {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        SceneManager.LoadScene("Map_Hosp1");
     }
 
     public void BackToMenu()
