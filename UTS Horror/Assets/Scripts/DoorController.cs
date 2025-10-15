@@ -1,53 +1,57 @@
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections;
 
 public class DoorController : MonoBehaviour
 {
-    public Animator doorAnimator;       // Animator pintu
-    public bool isOpen = false;         // Status pintu
-    public bool playerHasKey = false;   // Status kunci (apakah player punya)
-    public float interactDistance = 3f; // Jarak interaksi
-    public Transform player;            // Referensi player
-    public AudioSource doorSound;       // Suara pintu (opsional)
-    public AudioSource lockedSound;     // Suara pintu terkunci (opsional)
+    [Header("Door Settings")]
+    public Animator doorAnimator;      // Animator untuk pintu
+    public bool playerHasKey = false;  // Apakah player sudah punya kunci (atur di Inspector)
+    public float interactDistance = 3f; // Jarak interaksi dengan pintu
+
+    [Header("References")]
+    public Transform player;           // Transform dari player
+
+    private bool isOpen = false;       // Status internal untuk memastikan pintu hanya terbuka sekali
+    private bool isAnimating = false;  // Mencegah input berulang saat animasi berjalan
 
     void Update()
     {
-        // Jika player cukup dekat
-        if (Vector3.Distance(player.position, transform.position) < interactDistance)
+        // Keluar jika player tidak ada atau pintu sedang beranimasi
+        if (player == null || isAnimating) return;
+
+        // Hitung jarak antara player dan pintu
+        float distance = Vector3.Distance(player.position, transform.position);
+
+        // Cek jika player dalam jangkauan dan menekan tombol 'E'
+        if (distance < interactDistance && Input.GetKeyDown(KeyCode.E))
         {
-            // Tekan E untuk interaksi
-            if (Input.GetKeyDown(KeyCode.E))
+            // Hanya jalankan jika player punya kunci DAN pintu masih tertutup
+            if (playerHasKey && !isOpen)
             {
-                if (playerHasKey)
-                {
-                    StartCoroutine(OpenDoorWithDelay());
-                }
-                else
-                {
-                    // Kalau belum punya kunci, bunyi pintu terkunci
-                    if (lockedSound != null)
-                    {
-                        lockedSound.Play();
-                    }
-                    Debug.Log("Pintu terkunci! Kamu butuh kunci dulu.");
-                }
+                StartCoroutine(OpenTheDoor());
+            }
+            else if (!playerHasKey)
+            {
+                Debug.Log("🚪 Pintu terkunci! Kamu butuh kunci.");
             }
         }
     }
 
-    IEnumerator OpenDoorWithDelay()
+    IEnumerator OpenTheDoor()
     {
-        yield return new WaitForSeconds(0.5f); // Delay biar realistis
-        isOpen = !isOpen;
-        doorAnimator.SetBool("adaKunci", isOpen); // pakai parameter di Animator
+        isAnimating = true;
 
-        // Suara pintu terbuka
-        if (doorSound != null)
-        {
-            doorSound.Play();
-        }
+        // Mengubah status pintu menjadi terbuka, sehingga Coroutine ini tidak akan bisa dipanggil lagi
+        isOpen = true;
 
-        Debug.Log("Pintu " + (isOpen ? "terbuka" : "tertutup"));
+        // Memicu animasi di Animator dengan menyetel parameter "adaKunci" menjadi true
+        doorAnimator.SetBool("adaKunci", true);
+
+        Debug.Log("🔑 Pintu berhasil dibuka dengan kunci!");
+
+        // Beri jeda agar animasi selesai
+        yield return new WaitForSeconds(1f);
+
+        isAnimating = false;
     }
 }

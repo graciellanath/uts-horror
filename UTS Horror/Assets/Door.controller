@@ -11,9 +11,6 @@ AnimatorStateTransition:
   - m_ConditionMode: 1
     m_ConditionEvent: adaKunci
     m_EventTreshold: 0
-  - m_ConditionMode: 1
-    m_ConditionEvent: isOpen
-    m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: 4416820916725211146}
   m_Solo: 0
@@ -39,9 +36,6 @@ AnimatorStateTransition:
   - m_ConditionMode: 2
     m_ConditionEvent: adaKunci
     m_EventTreshold: 0
-  - m_ConditionMode: 2
-    m_ConditionEvent: isOpen
-    m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: 6981124179149981976}
   m_Solo: 0
@@ -66,12 +60,6 @@ AnimatorController:
   serializedVersion: 5
   m_AnimatorParameters:
   - m_Name: adaKunci
-    m_Type: 4
-    m_DefaultFloat: 0
-    m_DefaultInt: 0
-    m_DefaultBool: 0
-    m_Controller: {fileID: 9100000}
-  - m_Name: isOpen
     m_Type: 4
     m_DefaultFloat: 0
     m_DefaultInt: 0

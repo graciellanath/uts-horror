@@ -401,37 +401,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: eeefdd9044a28504abd5e39c9e8fe5d0, type: 3}
---- !u!1 &48689962
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 48689963}
-  m_Layer: 0
-  m_Name: point1_53
-  m_TagString: Movepoint
-  m_Icon: {fileID: 5721338939258241955, guid: 0000000000000000d000000000000000, type: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &48689963
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 48689962}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 51.57, y: -2.954, z: 16.8}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 2006592134}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &63503569
 GameObject:
   m_ObjectHideFlags: 0
@@ -712,90 +681,6 @@ PrefabInstance:
 Transform:
   m_CorrespondingSourceObject: {fileID: 475148, guid: b826295956c65444987d7baae67c5858, type: 3}
   m_PrefabInstance: {fileID: 1827176524}
-  m_PrefabAsset: {fileID: 0}
---- !u!1001 &95287254
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 1380041281}
-    m_Modifications:
-    - target: {fileID: 4856336461430574, guid: df2f14ece3a3a0847aad4f1407b39c50, type: 3}
-      propertyPath: m_RootOrder
-      value: 13
-      objectReference: {fileID: 0}
-    - target: {fileID: 4856336461430574, guid: df2f14ece3a3a0847aad4f1407b39c50, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0.93499947
-      objectReference: {fileID: 0}
-    - target: {fileID: 4856336461430574, guid: df2f14ece3a3a0847aad4f1407b39c50, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: -0.0035007144
-      objectReference: {fileID: 0}
-    - target: {fileID: 4856336461430574, guid: df2f14ece3a3a0847aad4f1407b39c50, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -0.05000007
-      objectReference: {fileID: 0}
-    - target: {fileID: 4856336461430574, guid: df2f14ece3a3a0847aad4f1407b39c50, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 0.39158028
-      objectReference: {fileID: 0}
-    - target: {fileID: 4856336461430574, guid: df2f14ece3a3a0847aad4f1407b39c50, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4856336461430574, guid: df2f14ece3a3a0847aad4f1407b39c50, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0.92014396
-      objectReference: {fileID: 0}
-    - target: {fileID: 4856336461430574, guid: df2f14ece3a3a0847aad4f1407b39c50, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4856336461430574, guid: df2f14ece3a3a0847aad4f1407b39c50, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 133.89401
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 1936011742919702, guid: df2f14ece3a3a0847aad4f1407b39c50, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 95287256}
-  m_SourcePrefab: {fileID: 100100000, guid: df2f14ece3a3a0847aad4f1407b39c50, type: 3}
---- !u!1 &95287255 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1936011742919702, guid: df2f14ece3a3a0847aad4f1407b39c50, type: 3}
-  m_PrefabInstance: {fileID: 95287254}
-  m_PrefabAsset: {fileID: 0}
---- !u!64 &95287256
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 95287255}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 1
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 4300012, guid: 951ba77d2ec869f4eb523276e4abf905, type: 3}
---- !u!4 &95287257 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 4856336461430574, guid: df2f14ece3a3a0847aad4f1407b39c50, type: 3}
-  m_PrefabInstance: {fileID: 95287254}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &96295467
 GameObject:
@@ -2430,37 +2315,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9287a4cf151cef34fb2bf51cfb3565a7, type: 3}
---- !u!1 &241203545
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 241203546}
-  m_Layer: 0
-  m_Name: point1_46
-  m_TagString: Movepoint
-  m_Icon: {fileID: 5721338939258241955, guid: 0000000000000000d000000000000000, type: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &241203546
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 241203545}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 56.53, y: -2.954, z: 1.95}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 2006592134}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &243834451
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3925,12 +3779,12 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1257244082436250, guid: df2f14ece3a3a0847aad4f1407b39c50, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1571895589}
+    - targetCorrespondingSourceObject: {fileID: 1257244082436250, guid: df2f14ece3a3a0847aad4f1407b39c50, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1571895590}
     - targetCorrespondingSourceObject: {fileID: 1936011742919702, guid: df2f14ece3a3a0847aad4f1407b39c50, type: 3}
       insertIndex: -1
       addedObject: {fileID: 408127206}
-    - targetCorrespondingSourceObject: {fileID: 1936011742919702, guid: df2f14ece3a3a0847aad4f1407b39c50, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 408127212}
   m_SourcePrefab: {fileID: 100100000, guid: df2f14ece3a3a0847aad4f1407b39c50, type: 3}
 --- !u!1 &408127205 stripped
 GameObject:
@@ -3964,25 +3818,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4856336461430574, guid: df2f14ece3a3a0847aad4f1407b39c50, type: 3}
   m_PrefabInstance: {fileID: 408127204}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &408127212
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 408127205}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a331999a74038f744b4132dfd9717d9a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DoorController
-  doorAnimator: {fileID: 1571895589}
-  isOpen: 0
-  playerHasKey: 0
-  interactDistance: 3
-  player: {fileID: 675265589}
-  doorSound: {fileID: 0}
-  lockedSound: {fileID: 0}
 --- !u!1001 &427327310
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -6793,7 +6628,7 @@ GameObject:
   m_Component:
   - component: {fileID: 824819602}
   m_Layer: 0
-  m_Name: point1_47
+  m_Name: point1_46
   m_TagString: Movepoint
   m_Icon: {fileID: 5721338939258241955, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
@@ -6808,7 +6643,7 @@ Transform:
   m_GameObject: {fileID: 824819601}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 51.61, y: -2.954, z: 1.79}
+  m_LocalPosition: {x: 51.61, y: -2.954, z: 7.62}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -9072,7 +8907,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 12b1114c6e0cdc24fa64c079dc76e364, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::KeyPickup
-  doorController: {fileID: 408127212}
+  doorController: {fileID: 1571895590}
   player: {fileID: 675265589}
   interactDistance: 3
 --- !u!1001 &915085880
@@ -9387,7 +9222,7 @@ GameObject:
   m_Component:
   - component: {fileID: 935255140}
   m_Layer: 0
-  m_Name: point1_51
+  m_Name: point1_50
   m_TagString: Movepoint
   m_Icon: {fileID: 5721338939258241955, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
@@ -9402,7 +9237,7 @@ Transform:
   m_GameObject: {fileID: 935255139}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 51.63, y: -2.954, z: 16.83}
+  m_LocalPosition: {x: 50.97, y: -2.954, z: 16.83}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -10029,7 +9864,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1006665420}
   m_Layer: 0
-  m_Name: point1_50
+  m_Name: point1_49
   m_TagString: Movepoint
   m_Icon: {fileID: 5721338939258241955, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
@@ -10044,7 +9879,7 @@ Transform:
   m_GameObject: {fileID: 1006665419}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 51.94, y: -2.954, z: 11.38}
+  m_LocalPosition: {x: 51.06, y: -2.954, z: 11.38}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -13210,9 +13045,6 @@ PrefabInstance:
     - {fileID: 1212217012698380696, guid: 7e4b8910ee9acf842b022199caf324c8, type: 3}
     - {fileID: 4148923327066694465, guid: 7e4b8910ee9acf842b022199caf324c8, type: 3}
     m_AddedGameObjects:
-    - targetCorrespondingSourceObject: {fileID: 8103984695124894444, guid: 7e4b8910ee9acf842b022199caf324c8, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 95287257}
     - targetCorrespondingSourceObject: {fileID: 3480493775355538946, guid: 7e4b8910ee9acf842b022199caf324c8, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2020701622}
@@ -13227,11 +13059,6 @@ PrefabInstance:
       addedObject: {fileID: 600095930}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7e4b8910ee9acf842b022199caf324c8, type: 3}
---- !u!4 &1380041281 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 8103984695124894444, guid: 7e4b8910ee9acf842b022199caf324c8, type: 3}
-  m_PrefabInstance: {fileID: 1380041280}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &1380041282 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3480493775355538946, guid: 7e4b8910ee9acf842b022199caf324c8, type: 3}
@@ -13874,7 +13701,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1457385069}
   m_Layer: 0
-  m_Name: point1_49
+  m_Name: point1_48
   m_TagString: Movepoint
   m_Icon: {fileID: 5721338939258241955, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
@@ -15160,6 +14987,22 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &1571895590
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1571895588}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a331999a74038f744b4132dfd9717d9a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DoorController
+  doorAnimator: {fileID: 1571895589}
+  playerHasKey: 0
+  interactDistance: 3
+  player: {fileID: 675265589}
 --- !u!1001 &1577131265
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -17678,7 +17521,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1882535985}
   m_Layer: 0
-  m_Name: point1_48
+  m_Name: point1_47
   m_TagString: Movepoint
   m_Icon: {fileID: 5721338939258241955, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
@@ -18736,14 +18579,12 @@ Transform:
   - {fileID: 309146536}
   - {fileID: 1851396610}
   - {fileID: 938956920}
-  - {fileID: 241203546}
   - {fileID: 824819602}
   - {fileID: 1882535985}
   - {fileID: 1457385069}
   - {fileID: 1006665420}
   - {fileID: 935255140}
   - {fileID: 2137873847}
-  - {fileID: 48689963}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2008533586
@@ -19864,7 +19705,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2137873847}
   m_Layer: 0
-  m_Name: point1_52
+  m_Name: point1_51
   m_TagString: Movepoint
   m_Icon: {fileID: 5721338939258241955, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
