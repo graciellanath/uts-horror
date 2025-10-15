@@ -1,69 +1,53 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.SceneManagement;
 
 public class DoorController : MonoBehaviour
 {
-    public Animator doorAnimator;         // animator with bool parameter "isOpen"
+    [Header("Door Settings")]
+    public Animator doorAnimator;
     public float interactDistance = 3f;
+
+    [Header("References")]
     public Transform player;
-    public AudioSource openSound;
-    public AudioSource lockedSound;
 
     private bool isOpen = false;
     private bool isAnimating = false;
-    private bool isNear = false;
 
     void Update()
     {
         if (player == null || isAnimating) return;
 
-        float dist = Vector3.Distance(player.position, transform.position);
-        if (dist < interactDistance)
-        {
-            if (!isNear)
-            {
-                isNear = true;
-                if (PlayerHasKey.hasKey) Debug.Log("Tekan [E] untuk membuka pintu");
-                else Debug.Log("Pintu terkunci. Butuh kunci.");
-                // TODO: show UI prompt
-            }
+        float distance = Vector3.Distance(player.position, transform.position);
 
-            if (Input.GetKeyDown(KeyCode.E))
-            {
-                TryToggleDoor();
-            }
-        }
-        else if (isNear)
+        if (distance < interactDistance && Input.GetKeyDown(KeyCode.E))
         {
-            isNear = false;
-            // TODO: hide UI prompt
+            if (PlayerHasKey.hasKey && !isOpen)
+            {
+                StartCoroutine(OpenTheDoor());
+            }
+            else if (!PlayerHasKey.hasKey)
+            {
+                Debug.Log("🚪 Pintu terkunci! Kamu butuh kunci.");
+            }
         }
     }
 
-    void TryToggleDoor()
-    {
-        if (!PlayerHasKey.hasKey)
-        {
-            if (lockedSound != null) lockedSound.Play();
-            Debug.Log("Pintu terkunci! Kamu butuh kunci.");
-            return;
-        }
-
-        StartCoroutine(ToggleDoorCoroutine());
-    }
-
-    IEnumerator ToggleDoorCoroutine()
+    IEnumerator OpenTheDoor()
     {
         isAnimating = true;
-        isOpen = !isOpen;
-        doorAnimator.SetBool("isOpen", isOpen); // ensure param name matches animator
-        if (openSound != null) openSound.Play();
-
-        Debug.Log("Pintu " + (isOpen ? "terbuka" : "tertutup"));
-        yield return new WaitForSeconds(1f); // tunggu anim selesai (sesuaikan)
+        isOpen = true;
+        doorAnimator.SetBool("adaKunci", true);
+        Debug.Log("🔑 Pintu berhasil dibuka dengan kunci!");
+        yield return new WaitForSeconds(1f);
         isAnimating = false;
     }
 
-    // optional helper for external checks
-    public bool IsOpen() => isOpen;
+    private void OnTriggerEnter(Collider other)
+    {
+        if (isOpen && other.CompareTag("Player"))
+        {
+            SceneManager.LoadScene("Win");
+        }
+    }
 }

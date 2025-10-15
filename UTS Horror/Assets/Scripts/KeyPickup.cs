@@ -4,7 +4,6 @@ public class KeyPickup : MonoBehaviour
 {
     public float interactDistance = 3f;
     public Transform player;
-    public AudioSource pickupSound; // optional
 
     private bool isNear = false;
 
@@ -13,32 +12,22 @@ public class KeyPickup : MonoBehaviour
         if (player == null) return;
 
         float dist = Vector3.Distance(player.position, transform.position);
-        if (dist < interactDistance)
-        {
-            if (!isNear)
-            {
-                isNear = true;
-                Debug.Log("Tekan [E] untuk mengambil kunci");
-                // TODO: show UI prompt
-            }
+        isNear = dist < interactDistance;
 
-            if (Input.GetKeyDown(KeyCode.E))
-            {
-                Pickup();
-            }
-        }
-        else if (isNear)
+        if (isNear && Input.GetKeyDown(KeyCode.E))
         {
-            isNear = false;
-            // TODO: hide UI prompt
+            Pickup();
         }
     }
 
     void Pickup()
     {
+        // Mengubah status kunci global menjadi true
         PlayerHasKey.hasKey = true;
+
         Debug.Log("🔑 Kunci diambil");
-        if (pickupSound != null) pickupSound.Play();
+
+        // Hancurkan objek kunci setelah diambil
         Destroy(gameObject);
     }
 }
