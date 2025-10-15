@@ -9,10 +9,11 @@ public class GameOverManager : MonoBehaviour
     }
 
     public void RetryGame()
-    {
-        Debug.Log("Retry diklik!");
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-    }
+{
+    Debug.Log("Retry diklik!");
+    SceneManager.LoadScene("Map_Hosp1"); // ganti dengan nama scene gameplay kamu
+}
+
 
     public void BackToMainMenu()
     {
