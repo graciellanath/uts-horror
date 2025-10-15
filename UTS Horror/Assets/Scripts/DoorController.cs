@@ -3,55 +3,67 @@ using System.Collections;
 
 public class DoorController : MonoBehaviour
 {
-    [Header("Door Settings")]
-    public Animator doorAnimator;      // Animator untuk pintu
-    public bool playerHasKey = false;  // Apakah player sudah punya kunci (atur di Inspector)
-    public float interactDistance = 3f; // Jarak interaksi dengan pintu
+    public Animator doorAnimator;         // animator with bool parameter "isOpen"
+    public float interactDistance = 3f;
+    public Transform player;
+    public AudioSource openSound;
+    public AudioSource lockedSound;
 
-    [Header("References")]
-    public Transform player;           // Transform dari player
-
-    private bool isOpen = false;       // Status internal untuk memastikan pintu hanya terbuka sekali
-    private bool isAnimating = false;  // Mencegah input berulang saat animasi berjalan
+    private bool isOpen = false;
+    private bool isAnimating = false;
+    private bool isNear = false;
 
     void Update()
     {
-        // Keluar jika player tidak ada atau pintu sedang beranimasi
         if (player == null || isAnimating) return;
 
-        // Hitung jarak antara player dan pintu
-        float distance = Vector3.Distance(player.position, transform.position);
-
-        // Cek jika player dalam jangkauan dan menekan tombol 'E'
-        if (distance < interactDistance && Input.GetKeyDown(KeyCode.E))
+        float dist = Vector3.Distance(player.position, transform.position);
+        if (dist < interactDistance)
         {
-            // Hanya jalankan jika player punya kunci DAN pintu masih tertutup
-            if (playerHasKey && !isOpen)
+            if (!isNear)
             {
-                StartCoroutine(OpenTheDoor());
+                isNear = true;
+                if (PlayerHasKey.hasKey) Debug.Log("Tekan [E] untuk membuka pintu");
+                else Debug.Log("Pintu terkunci. Butuh kunci.");
+                // TODO: show UI prompt
             }
-            else if (!playerHasKey)
+
+            if (Input.GetKeyDown(KeyCode.E))
             {
-                Debug.Log("🚪 Pintu terkunci! Kamu butuh kunci.");
+                TryToggleDoor();
             }
+        }
+        else if (isNear)
+        {
+            isNear = false;
+            // TODO: hide UI prompt
         }
     }
 
-    IEnumerator OpenTheDoor()
+    void TryToggleDoor()
+    {
+        if (!PlayerHasKey.hasKey)
+        {
+            if (lockedSound != null) lockedSound.Play();
+            Debug.Log("Pintu terkunci! Kamu butuh kunci.");
+            return;
+        }
+
+        StartCoroutine(ToggleDoorCoroutine());
+    }
+
+    IEnumerator ToggleDoorCoroutine()
     {
         isAnimating = true;
+        isOpen = !isOpen;
+        doorAnimator.SetBool("isOpen", isOpen); // ensure param name matches animator
+        if (openSound != null) openSound.Play();
 
-        // Mengubah status pintu menjadi terbuka, sehingga Coroutine ini tidak akan bisa dipanggil lagi
-        isOpen = true;
-
-        // Memicu animasi di Animator dengan menyetel parameter "adaKunci" menjadi true
-        doorAnimator.SetBool("adaKunci", true);
-
-        Debug.Log("🔑 Pintu berhasil dibuka dengan kunci!");
-
-        // Beri jeda agar animasi selesai
-        yield return new WaitForSeconds(1f);
-
+        Debug.Log("Pintu " + (isOpen ? "terbuka" : "tertutup"));
+        yield return new WaitForSeconds(1f); // tunggu anim selesai (sesuaikan)
         isAnimating = false;
     }
+
+    // optional helper for external checks
+    public bool IsOpen() => isOpen;
 }
