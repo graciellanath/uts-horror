@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using TMPro; // ⬅️ Ganti dari UnityEngine.UI ke TextMeshPro
 
 [RequireComponent(typeof(CharacterController))]
 public class playerfps : MonoBehaviour
@@ -13,11 +14,16 @@ public class playerfps : MonoBehaviour
     public float moveSpeed = 2f;
     public float sprintMultiplier = 2f;
 
+    [Header("Health Settings")]
+    public int maxHealth = 100;
+    public int health = 100;
+    public TextMeshProUGUI healthText; // ⬅️ TMP Text untuk UI Health
+
     private float rotationY = 0f;
     private Transform cameraTransform;
     private CharacterController controller;
     private bool isLooking = false;
-    public int health = 100;
+
     void Start()
     {
         cameraTransform = GetComponentInChildren<Camera>().transform;
@@ -25,6 +31,8 @@ public class playerfps : MonoBehaviour
 
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+
+        UpdateHealthUI(); // tampilkan health saat mulai
     }
 
     void Update()
@@ -34,7 +42,7 @@ public class playerfps : MonoBehaviour
         UpdateCameraPosition();
     }
 
-            void HandleMouseLook()
+    void HandleMouseLook()
     {
         if (Input.GetMouseButtonDown(1))
         {
@@ -83,14 +91,51 @@ public class playerfps : MonoBehaviour
         cameraTransform.position = camPos;
     }
 
+    // 🩸 Fungsi menerima damage
     public void TakeDamage(int amount)
     {
-        if (health >= 0)
+        health -= amount;
+        health = Mathf.Clamp(health, 0, maxHealth);
+
+        UpdateHealthUI();
+
+        if (health <= 0)
         {
-            health -= amount;
-        } else
-        {
+            Debug.Log("Player mati!");
             SceneManager.LoadScene("GameOver");
+        }
+    }
+
+    // 💊 Fungsi menambah darah saat ambil first aid
+    public void Heal(int amount)
+    {
+        if (health >= maxHealth)
+        {
+            Debug.Log("Darah sudah penuh! Tidak bisa menggunakan First Aid.");
+            return;
+        }
+
+        health += amount;
+        health = Mathf.Clamp(health, 0, maxHealth);
+
+        Debug.Log($"Menggunakan First Aid, darah sekarang: {health}%");
+        UpdateHealthUI();
+    }
+
+    // 🧠 Update tampilan UI (dengan warna dinamis)
+    void UpdateHealthUI()
+    {
+        if (healthText != null)
+        {
+            healthText.text = $"Health: {health}%";
+
+            // Ubah warna berdasarkan persentase darah
+            if (health > 70)
+                healthText.color = Color.green;
+            else if (health > 30)
+                healthText.color = Color.yellow;
+            else
+                healthText.color = Color.red;
         }
     }
 }
