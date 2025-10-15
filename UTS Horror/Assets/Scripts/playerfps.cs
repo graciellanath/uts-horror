@@ -1,6 +1,6 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using TMPro; // ⬅️ Ganti dari UnityEngine.UI ke TextMeshPro
+using TMPro;
 
 [RequireComponent(typeof(CharacterController))]
 public class playerfps : MonoBehaviour
@@ -17,7 +17,7 @@ public class playerfps : MonoBehaviour
     [Header("Health Settings")]
     public int maxHealth = 100;
     public int health = 100;
-    public TextMeshProUGUI healthText; // ⬅️ TMP Text untuk UI Health
+    public TextMeshProUGUI healthText;
 
     private float rotationY = 0f;
     private Transform cameraTransform;
@@ -29,10 +29,10 @@ public class playerfps : MonoBehaviour
         cameraTransform = GetComponentInChildren<Camera>().transform;
         controller = GetComponent<CharacterController>();
 
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
 
-        UpdateHealthUI(); // tampilkan health saat mulai
+        UpdateHealthUI();
     }
 
     void Update()
@@ -44,19 +44,23 @@ public class playerfps : MonoBehaviour
 
     void HandleMouseLook()
     {
+        // Klik kanan untuk mulai melihat
         if (Input.GetMouseButtonDown(1))
         {
             isLooking = true;
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
         }
-        else if (Input.GetMouseButtonUp(1))
+
+        // Lepas klik kanan untuk berhenti melihat
+        if (Input.GetMouseButtonUp(1))
         {
             isLooking = false;
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
         }
 
+        // Gerakkan kamera hanya saat klik kanan ditekan
         if (isLooking)
         {
             float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity;
@@ -71,14 +75,15 @@ public class playerfps : MonoBehaviour
 
     void HandleMovement()
     {
+        // Tidak bisa bergerak kalau game di-pause
+        if (Time.timeScale == 0f) return;
+
         float moveX = Input.GetAxis("Horizontal");
         float moveZ = Input.GetAxis("Vertical");
 
         float currentSpeed = moveSpeed;
         if (Input.GetKey(KeyCode.LeftShift))
-        {
             currentSpeed *= sprintMultiplier;
-        }
 
         Vector3 moveDir = transform.right * moveX + transform.forward * moveZ;
         controller.Move(moveDir * currentSpeed * Time.deltaTime);
@@ -91,7 +96,7 @@ public class playerfps : MonoBehaviour
         cameraTransform.position = camPos;
     }
 
-    // 🩸 Fungsi menerima damage
+    // 🩸 Terkena damage
     public void TakeDamage(int amount)
     {
         health -= amount;
@@ -106,12 +111,12 @@ public class playerfps : MonoBehaviour
         }
     }
 
-    // 💊 Fungsi menambah darah saat ambil first aid
+    // 💊 Ambil First Aid
     public void Heal(int amount)
     {
         if (health >= maxHealth)
         {
-            Debug.Log("Darah sudah penuh! Tidak bisa menggunakan First Aid.");
+            Debug.Log("Darah sudah penuh!");
             return;
         }
 
@@ -122,14 +127,12 @@ public class playerfps : MonoBehaviour
         UpdateHealthUI();
     }
 
-    // 🧠 Update tampilan UI (dengan warna dinamis)
+    // 💬 Update UI Health
     void UpdateHealthUI()
     {
         if (healthText != null)
         {
             healthText.text = $"Health: {health}%";
-
-            // Ubah warna berdasarkan persentase darah
             if (health > 70)
                 healthText.color = Color.green;
             else if (health > 30)
