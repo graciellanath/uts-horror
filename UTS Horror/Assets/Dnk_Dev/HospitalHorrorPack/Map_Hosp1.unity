@@ -3976,7 +3976,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a331999a74038f744b4132dfd9717d9a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DoorController
-  doorAnimator: {fileID: 0}
+  doorAnimator: {fileID: 1571895589}
   isOpen: 0
   playerHasKey: 0
   interactDistance: 3
