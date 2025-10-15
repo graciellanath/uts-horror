@@ -1,58 +1,61 @@
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(Rigidbody))]
 public class MonsterAI : MonoBehaviour
 {
-    [Header("References")]
+    [Header("Komponen")]
     public Animator anim;
     public Transform player;
+    private Rigidbody rb;
+    private MonsterAttack monsterAttack; // referensi ke script attack
 
-    [Header("Patrol Points")]
+    [Header("Patroli")]
     public Transform movePointParent;
     private List<Transform> patrolPoints = new List<Transform>();
     private int currentIndex = 0;
     private bool movingForward = true;
 
-    [Header("Movement Settings")]
+    [Header("Parameter Gerak")]
     public float moveSpeed = 2f;
-    public float rotationSpeed = 5f;
-
-    [Header("Detection Settings")]
     public float chaseRange = 10f;
     public float attackRange = 2f;
+    public float rotationSpeed = 5f;
+
+    [Header("Layer Mask")]
     public LayerMask obstacleMask;
 
-    [Header("Attack Settings")]
-    public float attackCooldown = 2f;
-    private float attackTimer = 0f;
-    private bool isAttacking = false;
+    [Header("Status Internal")]
     private bool isChasing = false;
+    private bool isAttacking = false;
 
-    public Transform attackPoint;
-    public float attackRadius = 1.5f;
-    public int damage = 1;
+    [Header("Debug")]
+    public bool showDebugLog = true;
 
-    void Start()
+    private void Start()
     {
-        // Cari Player otomatis kalau belum diassign
+        rb = GetComponent<Rigidbody>();
+        rb.freezeRotation = true;
+
         if (player == null)
         {
             GameObject p = GameObject.FindGameObjectWithTag("Player");
             if (p != null) player = p.transform;
         }
 
-        // Ambil Animator otomatis
         if (anim == null)
         {
             anim = GetComponent<Animator>();
-            if (anim == null) anim = GetComponentInChildren<Animator>();
+            if (anim == null)
+                anim = GetComponentInChildren<Animator>();
         }
 
-        // Root motion dimatikan (AI jalan via script)
-        if (anim != null) anim.applyRootMotion = false;
+        if (anim != null)
+            anim.applyRootMotion = false;
 
-        // Ambil patrol point dari parent yang ditandai tag MovePoint
+        // Hubungkan ke MonsterAttack (kalau ada)
+        monsterAttack = GetComponent<MonsterAttack>();
+
         if (movePointParent == null)
         {
             GameObject mp = GameObject.FindGameObjectWithTag("MovePoint");
@@ -69,17 +72,28 @@ public class MonsterAI : MonoBehaviour
             transform.LookAt(patrolPoints[0]);
     }
 
-    void Update()
+    private void Update()
     {
         if (player == null || patrolPoints.Count == 0) return;
 
-        attackTimer -= Time.deltaTime;
         float distanceToPlayer = Vector3.Distance(transform.position, player.position);
         bool canSeePlayer = CanSeePlayer();
 
+        HandleStates(distanceToPlayer, canSeePlayer);
+    }
+
+    private void FixedUpdate()
+    {
+        if (player == null) return;
+        HandleMovement();
+    }
+
+    private void HandleStates(float distanceToPlayer, bool canSeePlayer)
+    {
         if (isChasing)
         {
-            if (!canSeePlayer)
+            // Berhenti mengejar jika player hilang
+            if (!canSeePlayer || distanceToPlayer > chaseRange)
             {
                 isChasing = false;
                 isAttacking = false;
@@ -88,36 +102,26 @@ public class MonsterAI : MonoBehaviour
                 return;
             }
 
+            // Serang kalau cukup dekat
             if (distanceToPlayer <= attackRange)
             {
-                LookAtPlayer();
+                isAttacking = true;
+                SetAnimationState(false, true);
 
-                if (!isAttacking && attackTimer <= 0f)
-                {
-                    StartCoroutine(AttackRoutine());
-                    attackTimer = attackCooldown;
-                }
-            }
-            else if (distanceToPlayer <= chaseRange)
-            {
-                if (!isAttacking)
-                {
-                    SetAnimationState(true, false);
-                    MoveTowards(player.position);
-                }
+                // Panggil serangan dari MonsterAttack
+                if (monsterAttack != null)
+                    monsterAttack.TryAttack();
             }
             else
             {
-                isChasing = false;
                 isAttacking = false;
                 SetAnimationState(true, false);
-                currentIndex = FindNearestPointIndex();
             }
         }
         else
         {
-            Patrol();
-            if (distanceToPlayer <= chaseRange && canSeePlayer)
+            // Mulai mengejar
+            if (canSeePlayer && distanceToPlayer <= chaseRange)
             {
                 isChasing = true;
                 isAttacking = false;
@@ -125,110 +129,93 @@ public class MonsterAI : MonoBehaviour
         }
     }
 
-    IEnumerator AttackRoutine()
+    private void HandleMovement()
     {
-        isAttacking = true;
-        SetAnimationState(false, true);
-        yield return new WaitForSeconds(1.2f); // tunggu sampai animasi selesai
-        isAttacking = false;
-    }
+        if (isAttacking) return; // jangan gerak saat serang
 
-    void LookAtPlayer()
-    {
-        Vector3 dir = (player.position - transform.position).normalized;
-        dir.y = 0;
-        if (dir != Vector3.zero)
+        if (isChasing)
         {
-            transform.rotation = Quaternion.Slerp(
-                transform.rotation,
-                Quaternion.LookRotation(dir),
-                rotationSpeed * Time.deltaTime
-            );
+            MoveTowards(player.position);
+        }
+        else
+        {
+            if (patrolPoints.Count == 0) return;
+
+            Vector3 target = patrolPoints[currentIndex].position;
+            MoveTowards(target);
+
+            if (Vector3.Distance(transform.position, target) < 0.5f)
+            {
+                GoToNextPoint();
+            }
         }
     }
 
-    void SetAnimationState(bool walking, bool attacking)
+    private void MoveTowards(Vector3 targetPosition)
+    {
+        Vector3 dir = (targetPosition - transform.position).normalized;
+        dir.y = 0;
+
+        rb.MovePosition(rb.position + dir * moveSpeed * Time.fixedDeltaTime);
+
+        if (dir != Vector3.zero)
+            RotateTowards(dir);
+    }
+
+    private void RotateTowards(Vector3 dir)
+    {
+        Quaternion targetRot = Quaternion.LookRotation(dir);
+        rb.MoveRotation(Quaternion.Slerp(transform.rotation, targetRot, rotationSpeed * Time.deltaTime));
+    }
+
+    private void SetAnimationState(bool walking, bool attacking)
     {
         if (anim == null) return;
         anim.SetBool("isJalan", walking);
         if (attacking)
-        {
-            anim.ResetTrigger("isSerang");
             anim.SetTrigger("isSerang");
-        }
     }
 
-    bool CanSeePlayer()
+    private bool CanSeePlayer()
     {
         if (player == null) return false;
         Vector3 origin = transform.position + Vector3.up * 1.5f;
         Vector3 target = player.position + Vector3.up * 1.5f;
-        Vector3 direction = target - origin;
-        float distance = direction.magnitude;
+        Vector3 dir = target - origin;
+        float dist = dir.magnitude;
 
-        if (Physics.Raycast(origin, direction.normalized, out RaycastHit hit, distance))
+        if (Physics.Raycast(origin, dir.normalized, out RaycastHit hit, dist, ~obstacleMask))
         {
-            if (hit.collider.CompareTag("Player"))
-                return true;
+            return hit.collider.CompareTag("Player");
         }
         return false;
     }
 
-    void Patrol()
+    private void GoToNextPoint()
     {
         if (patrolPoints.Count == 0) return;
 
-        Vector3 targetPos = patrolPoints[currentIndex].position;
-        float distance = Vector3.Distance(transform.position, targetPos);
-        SetAnimationState(true, false);
-        MoveTowards(targetPos);
-
-        if (distance < 0.5f)
-            GoToNextPoint();
-    }
-
-    void MoveTowards(Vector3 targetPos)
-    {
-        Vector3 direction = (targetPos - transform.position).normalized;
-        direction.y = 0;
-        if (direction != Vector3.zero)
-        {
-            transform.rotation = Quaternion.Slerp(
-                transform.rotation,
-                Quaternion.LookRotation(direction),
-                rotationSpeed * Time.deltaTime
-            );
-        }
-        transform.position += direction * moveSpeed * Time.deltaTime;
-    }
-
-    void GoToNextPoint()
-    {
-        if (patrolPoints.Count < 2) return;
-
         if (movingForward)
         {
-            if (currentIndex < patrolPoints.Count - 1)
-                currentIndex++;
-            else
+            currentIndex++;
+            if (currentIndex >= patrolPoints.Count)
             {
+                currentIndex = patrolPoints.Count - 2;
                 movingForward = false;
-                currentIndex--;
             }
         }
         else
         {
-            if (currentIndex > 0)
-                currentIndex--;
-            else
+            currentIndex--;
+            if (currentIndex < 0)
             {
+                currentIndex = 1;
                 movingForward = true;
-                currentIndex++;
             }
         }
     }
 
-    int FindNearestPointIndex()
+    private int FindNearestPointIndex()
     {
         int nearest = 0;
         float minDist = Mathf.Infinity;
@@ -244,30 +231,11 @@ public class MonsterAI : MonoBehaviour
         return nearest;
     }
 
-    // === Dipanggil oleh Animation Event pada animasi "isSerang" ===
-    public void DealDamage()
+    private void OnDrawGizmosSelected()
     {
-        if (attackPoint == null) return;
-
-        Collider[] hits = Physics.OverlapSphere(attackPoint.position, attackRadius);
-        foreach (Collider hit in hits)
-        {
-            if (hit.CompareTag("Player"))
-            {
-                playerfps playerScript = hit.GetComponent<playerfps>();
-                if (playerScript != null)
-                {
-                    playerScript.TakeDamage(damage); // langsung GameOver
-                }
-                break;
-            }
-        }
-    }
-
-    void OnDrawGizmosSelected()
-    {
-        if (attackPoint == null) return;
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(transform.position, chaseRange);
         Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(attackPoint.position, attackRadius);
+        Gizmos.DrawWireSphere(transform.position, attackRange);
     }
 }

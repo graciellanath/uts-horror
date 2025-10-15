@@ -17,7 +17,7 @@ public class playerfps : MonoBehaviour
     private Transform cameraTransform;
     private CharacterController controller;
     private bool isLooking = false;
-
+    public int health = 100;
     void Start()
     {
         cameraTransform = GetComponentInChildren<Camera>().transform;
@@ -34,7 +34,7 @@ public class playerfps : MonoBehaviour
         UpdateCameraPosition();
     }
 
-    void HandleMouseLook()
+            void HandleMouseLook()
     {
         if (Input.GetMouseButtonDown(1))
         {
@@ -85,6 +85,12 @@ public class playerfps : MonoBehaviour
 
     public void TakeDamage(int amount)
     {
-        SceneManager.LoadScene("GameOver");
+        if (health >= 0)
+        {
+            health -= amount;
+        } else
+        {
+            SceneManager.LoadScene("GameOver");
+        }
     }
 }
