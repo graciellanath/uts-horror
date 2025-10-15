@@ -270,7 +270,7 @@ ModelImporter:
       takeName: Creep|Idle1_Action
       internalID: -6087772779972263259
       firstFrame: 0
-      lastFrame: 60
+      lastFrame: 25
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
