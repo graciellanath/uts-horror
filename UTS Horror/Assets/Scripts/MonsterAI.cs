@@ -53,7 +53,7 @@ public class MonsterAI : MonoBehaviour
         if (anim != null)
             anim.applyRootMotion = false;
 
-        // Hubungkan ke MonsterAttack (kalau ada)
+        // hubungkan ke script MonsterAttack
         monsterAttack = GetComponent<MonsterAttack>();
 
         if (movePointParent == null)
@@ -92,7 +92,7 @@ public class MonsterAI : MonoBehaviour
     {
         if (isChasing)
         {
-            // Berhenti mengejar jika player hilang
+            //= berhenti ngejar kalau gabisa lihat player atau terlalu jauh
             if (!canSeePlayer || distanceToPlayer > chaseRange)
             {
                 isChasing = false;
@@ -102,13 +102,13 @@ public class MonsterAI : MonoBehaviour
                 return;
             }
 
-            // Serang kalau cukup dekat
+            // serang kalau dekat
             if (distanceToPlayer <= attackRange)
             {
                 isAttacking = true;
                 SetAnimationState(false, true);
 
-                // Panggil serangan dari MonsterAttack
+                // panggil serangan dari MonsterAttack
                 if (monsterAttack != null)
                     monsterAttack.TryAttack();
             }
@@ -120,7 +120,7 @@ public class MonsterAI : MonoBehaviour
         }
         else
         {
-            // Mulai mengejar
+            // kejar
             if (canSeePlayer && distanceToPlayer <= chaseRange)
             {
                 isChasing = true;
@@ -131,7 +131,7 @@ public class MonsterAI : MonoBehaviour
 
     private void HandleMovement()
     {
-        if (isAttacking) return; // jangan gerak saat serang
+        if (isAttacking) return; // ga gerak saat nyerang
 
         if (isChasing)
         {

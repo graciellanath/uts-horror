@@ -10,7 +10,7 @@ public class ExitDoorTrigger : MonoBehaviour
             if (PlayerHasKey.hasKey)
             {
                 Debug.Log("🎉 Player berhasil keluar!");
-                SceneManager.LoadScene("Win"); // Ganti dengan nama scene kamu
+                SceneManager.LoadScene("Win"); //berubah ke scene Win
             }
             else
             {

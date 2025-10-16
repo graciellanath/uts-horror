@@ -19,6 +19,8 @@ public class playerfps : MonoBehaviour
     public int health = 100;
     public TextMeshProUGUI healthText;
 
+    // var untuk simpan state rotasi
+    private float rotationX = 0f;
     private float rotationY = 0f;
     private Transform cameraTransform;
     private CharacterController controller;
@@ -33,6 +35,9 @@ public class playerfps : MonoBehaviour
         Cursor.visible = true;
 
         UpdateHealthUI();
+
+        // Atur sudut awal untuk rotasi horizontal di sini
+        rotationX = 90f; // 90 derajat agar menghadap sumbu X positif
     }
 
     void Update()
@@ -44,7 +49,9 @@ public class playerfps : MonoBehaviour
 
     void HandleMouseLook()
     {
-        // Klik kanan untuk mulai melihat
+        // gabisa di rotasi kalau game di-pause
+        if (Time.timeScale == 0f) return;
+
         if (Input.GetMouseButtonDown(1))
         {
             isLooking = true;
@@ -52,7 +59,6 @@ public class playerfps : MonoBehaviour
             Cursor.visible = false;
         }
 
-        // Lepas klik kanan untuk berhenti melihat
         if (Input.GetMouseButtonUp(1))
         {
             isLooking = false;
@@ -60,22 +66,25 @@ public class playerfps : MonoBehaviour
             Cursor.visible = true;
         }
 
-        // Gerakkan kamera hanya saat klik kanan ditekan
         if (isLooking)
         {
             float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity;
             float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity;
 
-            transform.Rotate(Vector3.up * mouseX);
+            // input mouse untuk rotasi
+            rotationX += mouseX;
             rotationY -= mouseY;
             rotationY = Mathf.Clamp(rotationY, minY, maxY);
+
+            // rotasi player dan kamera
+            transform.rotation = Quaternion.Euler(0, rotationX, 0);
             cameraTransform.localRotation = Quaternion.Euler(rotationY, 0, 0);
         }
     }
 
     void HandleMovement()
     {
-        // Tidak bisa bergerak kalau game di-pause
+        // gabisa gerak kalau game di-pause
         if (Time.timeScale == 0f) return;
 
         float moveX = Input.GetAxis("Horizontal");
@@ -96,7 +105,6 @@ public class playerfps : MonoBehaviour
         cameraTransform.position = camPos;
     }
 
-    // 🩸 Terkena damage
     public void TakeDamage(int amount)
     {
         health -= amount;
@@ -107,11 +115,15 @@ public class playerfps : MonoBehaviour
         if (health <= 0)
         {
             Debug.Log("Player mati!");
+
+            //kembaliin cursor ke normal sebelum ganti scene
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+
             SceneManager.LoadScene("GameOver");
         }
     }
 
-    // 💊 Ambil First Aid
     public void Heal(int amount)
     {
         if (health >= maxHealth)
@@ -127,7 +139,6 @@ public class playerfps : MonoBehaviour
         UpdateHealthUI();
     }
 
-    // 💬 Update UI Health
     void UpdateHealthUI()
     {
         if (healthText != null)

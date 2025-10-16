@@ -11,7 +11,7 @@ public class GameOverManager : MonoBehaviour
     public void RetryGame()
 {
     Debug.Log("Retry diklik!");
-    SceneManager.LoadScene("Map_Hosp1"); // ganti dengan nama scene gameplay kamu
+    SceneManager.LoadScene("Map_Hosp1");
 }
 
 

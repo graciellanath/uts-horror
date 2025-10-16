@@ -6,18 +6,15 @@ public class MonsterAttack : MonoBehaviour
 
     private void Start()
     {
-        // Mencari referensi player jika belum di-assign di Inspector
+        // cari script playerfps di scene 
         if (playerSc == null)
         {
             playerSc = FindObjectOfType<playerfps>();
         }
     }
 
-    // Fungsi ini tidak lagi diperlukan untuk cooldown, 
-    // tapi tetap ada agar tidak error jika dipanggil dari script lain.
     public void TryAttack()
     {
-        // Logika cooldown telah dihapus.
     }
 
     // Fungsi ini dipanggil dari Animation Event untuk memberikan damage

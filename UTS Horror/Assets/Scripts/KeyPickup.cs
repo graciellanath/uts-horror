@@ -22,12 +22,12 @@ public class KeyPickup : MonoBehaviour
 
     void Pickup()
     {
-        // Mengubah status kunci global menjadi true
+        // ubah status kunci di PlayerHasKey
         PlayerHasKey.hasKey = true;
 
         Debug.Log("🔑 Kunci diambil");
 
-        // Hancurkan objek kunci setelah diambil
+        // hancurin object kunci saat diambil
         Destroy(gameObject);
     }
 }
