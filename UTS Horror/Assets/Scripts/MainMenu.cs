@@ -6,13 +6,13 @@ public class MainMenu : MonoBehaviour
     // Tombol Play
     public void PlayGame()
     {
-        SceneManager.LoadScene("Map_Hosp1"); // Ganti dengan nama scene gameplay kamu
+        SceneManager.LoadScene("Map_Hosp1"); 
     }
 
     // Tombol How To Play
     public void HowToPlay()
     {
-        SceneManager.LoadScene("HowToPlay"); // Pastikan scene HowToPlay sudah ditambahkan di Build Settings
+        SceneManager.LoadScene("HowToPlay"); 
     }
 
     // Tombol Quit

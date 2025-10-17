@@ -4,7 +4,7 @@ using UnityEngine.SceneManagement;
 public class PauseManager : MonoBehaviour
 {
     public GameObject pauseMenuPanel;
-    public MonoBehaviour cameraController; // drag script kamera kamu di Inspector
+    public MonoBehaviour cameraController; 
     private bool isPaused = false;
 
     void Start()
@@ -12,7 +12,7 @@ public class PauseManager : MonoBehaviour
         if (pauseMenuPanel != null)
             pauseMenuPanel.SetActive(false);
 
-        ResumeGame(); // Pastikan game mulai dalam keadaan jalan
+        ResumeGame(); 
     }
 
     public void PauseGame()
@@ -22,14 +22,14 @@ public class PauseManager : MonoBehaviour
         isPaused = true;
         pauseMenuPanel.SetActive(true);
 
-        // ⏸ Hentikan waktu dalam game
+        // hentikan waktu dalam game
         Time.timeScale = 0f;
 
-        // ⛔ Matikan script kamera supaya gak bisa rotasi
+        // matikan script kamera supaya gak bisa rotasi
         if (cameraController != null)
             cameraController.enabled = false;
 
-        // ⛔ Kursor bebas
+        // kursor bebas
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
     }
@@ -41,21 +41,21 @@ public class PauseManager : MonoBehaviour
         isPaused = false;
         pauseMenuPanel.SetActive(false);
 
-        // ▶️ Lanjutkan waktu
+        // lanjutkan waktu
         Time.timeScale = 1f;
 
-        // 🔒 Aktifkan lagi kamera controller
+        // aktifkan lagi kamera controller
         if (cameraController != null)
             cameraController.enabled = true;
 
-        // 🔒 Kunci kursor lagi biar bisa lihat sekitar
+        // kunci kursor lagi biar bisa lihat sekitar
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
     }
 
     public void BackToMainMenu()
     {
-        Time.timeScale = 1f; // Reset waktu dulu
+        Time.timeScale = 1f; // reset waktu dulu
         SceneManager.LoadScene("MainMenu");
     }
 

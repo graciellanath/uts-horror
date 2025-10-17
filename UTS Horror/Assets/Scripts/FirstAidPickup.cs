@@ -2,9 +2,9 @@ using UnityEngine;
 
 public class FirstAidPickup : MonoBehaviour
 {
-    public int healAmount = 25;          // Jumlah darah yang dipulihkan
-    public float interactDistance = 3f;  // Jarak interaksi maksimum
-    public Transform player;             // Referensi ke player (drag di Inspector)
+    public int healAmount = 25;          // jumlah darah yang dipulihkan +25
+    public float interactDistance = 3f;  // jarak interaksi maksimum
+    public Transform player;             // ref ke player
 
     private playerfps playerScript;
     private bool isNear = false;
@@ -21,7 +21,7 @@ public class FirstAidPickup : MonoBehaviour
 
         float distance = Vector3.Distance(player.position, transform.position);
 
-        // Cek apakah player berada dalam jarak interaksi
+        // Ngecek apakah player berada dalam jarak interaksi
         if (distance < interactDistance)
         {
             if (!isNear)
@@ -30,7 +30,7 @@ public class FirstAidPickup : MonoBehaviour
                 Debug.Log("Tekan [E] untuk menggunakan First Aid");
             }
 
-            // Tekan E untuk ambil first aid
+            // tekan E untuk ambil first aid
             if (Input.GetKeyDown(KeyCode.E))
             {
                 TryPickup();
