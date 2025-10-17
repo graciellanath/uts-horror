@@ -152,4 +152,10 @@ public class playerfps : MonoBehaviour
                 healthText.color = Color.red;
         }
     }
+    void OnDestroy()
+    {
+        // Kode ini memastikan cursor normal 
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+    }
 }
