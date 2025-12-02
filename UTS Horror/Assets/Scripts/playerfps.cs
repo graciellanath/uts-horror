@@ -11,45 +11,53 @@ public class playerfps : MonoBehaviour
     public float maxY = 60f;
 
     [Header("Movement Settings")]
-    public float moveSpeed = 2f;
+    public float moveSpeed = 5f;
     public float sprintMultiplier = 2f;
+    public float gravity = -9.81f;
 
     [Header("Health Settings")]
     public int maxHealth = 100;
     public int health = 100;
     public TextMeshProUGUI healthText;
 
-    // var untuk simpan state rotasi
     private float rotationX = 0f;
     private float rotationY = 0f;
     private Transform cameraTransform;
     private CharacterController controller;
+    private Animator animator; // Variabel Animator
     private bool isLooking = false;
+
+    private Vector3 velocity;
 
     void Start()
     {
         cameraTransform = GetComponentInChildren<Camera>().transform;
         controller = GetComponent<CharacterController>();
 
+        // Cari Animator di dalam anak objek (Model 3D kamu)
+        animator = GetComponentInChildren<Animator>();
+
+        // Cek jaga-jaga kalau lupa pasang Animator
+        if (animator == null)
+        {
+            Debug.LogWarning("Animator tidak ditemukan di Player atau Child-nya!");
+        }
+
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
 
         UpdateHealthUI();
-
-        // Atur sudut awal untuk rotasi horizontal di sini
-        rotationX = 90f; // 90 derajat agar menghadap sumbu X positif
+        rotationX = transform.eulerAngles.y;
     }
 
     void Update()
     {
         HandleMouseLook();
         HandleMovement();
-        UpdateCameraPosition();
     }
 
     void HandleMouseLook()
     {
-        // gabisa di rotasi kalau game di-pause
         if (Time.timeScale == 0f) return;
 
         if (Input.GetMouseButtonDown(1))
@@ -71,12 +79,10 @@ public class playerfps : MonoBehaviour
             float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity;
             float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity;
 
-            // input mouse untuk rotasi
             rotationX += mouseX;
             rotationY -= mouseY;
             rotationY = Mathf.Clamp(rotationY, minY, maxY);
 
-            // rotasi player dan kamera
             transform.rotation = Quaternion.Euler(0, rotationX, 0);
             cameraTransform.localRotation = Quaternion.Euler(rotationY, 0, 0);
         }
@@ -84,58 +90,64 @@ public class playerfps : MonoBehaviour
 
     void HandleMovement()
     {
-        // gabisa gerak kalau game di-pause
         if (Time.timeScale == 0f) return;
+
+        if (controller.isGrounded && velocity.y < 0)
+        {
+            velocity.y = -2f;
+        }
 
         float moveX = Input.GetAxis("Horizontal");
         float moveZ = Input.GetAxis("Vertical");
 
+        // Cek apakah player sedang bergerak (WASD ditekan)
+        // Magnitude > 0.1f artinya ada tombol yang ditekan
+        bool isMoving = Mathf.Abs(moveX) > 0.1f || Mathf.Abs(moveZ) > 0.1f;
+
+        // Cek apakah player sedang lari (Bergerak + Shift Kiri)
+        bool isSprinting = isMoving && Input.GetKey(KeyCode.LeftShift);
+
+        // --- UPDATE ANIMASI ---
+        if (animator != null)
+        {
+            // Set parameter isWalk (true jika bergerak)
+            animator.SetBool("isWalk", isMoving);
+
+            // Set parameter isRun (true jika bergerak + shift)
+            animator.SetBool("isRun", isSprinting);
+        }
+
         float currentSpeed = moveSpeed;
-        if (Input.GetKey(KeyCode.LeftShift))
+        if (isSprinting)
             currentSpeed *= sprintMultiplier;
 
-        Vector3 moveDir = transform.right * moveX + transform.forward * moveZ;
-        controller.Move(moveDir * currentSpeed * Time.deltaTime);
-    }
+        Vector3 move = transform.right * moveX + transform.forward * moveZ;
+        controller.Move(move * currentSpeed * Time.deltaTime);
 
-    void UpdateCameraPosition()
-    {
-        Vector3 camPos = transform.position;
-        camPos.y += controller.height * 0.5f - 0.1f;
-        cameraTransform.position = camPos;
+        velocity.y += gravity * Time.deltaTime;
+        controller.Move(velocity * Time.deltaTime);
     }
 
     public void TakeDamage(int amount)
     {
         health -= amount;
         health = Mathf.Clamp(health, 0, maxHealth);
-
         UpdateHealthUI();
 
         if (health <= 0)
         {
             Debug.Log("Player mati!");
-
-            //kembaliin cursor ke normal sebelum ganti scene
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
-
             SceneManager.LoadScene("GameOver");
         }
     }
 
     public void Heal(int amount)
     {
-        if (health >= maxHealth)
-        {
-            Debug.Log("Darah sudah penuh!");
-            return;
-        }
-
+        if (health >= maxHealth) return;
         health += amount;
         health = Mathf.Clamp(health, 0, maxHealth);
-
-        Debug.Log($"Menggunakan First Aid, darah sekarang: {health}%");
         UpdateHealthUI();
     }
 
@@ -144,17 +156,14 @@ public class playerfps : MonoBehaviour
         if (healthText != null)
         {
             healthText.text = $"Health: {health}%";
-            if (health > 70)
-                healthText.color = Color.green;
-            else if (health > 30)
-                healthText.color = Color.yellow;
-            else
-                healthText.color = Color.red;
+            if (health > 70) healthText.color = Color.green;
+            else if (health > 30) healthText.color = Color.yellow;
+            else healthText.color = Color.red;
         }
     }
+
     void OnDestroy()
     {
-        // Kode ini memastikan cursor normal 
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
     }
