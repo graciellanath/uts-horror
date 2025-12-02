@@ -13,7 +13,7 @@ public class playerfps : MonoBehaviour
     [Header("Movement Settings")]
     public float moveSpeed = 5f;
     public float sprintMultiplier = 2f;
-    public float gravity = -9.81f; // Gravitasi bumi
+    public float gravity = -9.81f;
 
     [Header("Health Settings")]
     public int maxHealth = 100;
@@ -24,15 +24,24 @@ public class playerfps : MonoBehaviour
     private float rotationY = 0f;
     private Transform cameraTransform;
     private CharacterController controller;
+    private Animator animator; // Variabel Animator
     private bool isLooking = false;
 
-    // Variabel khusus untuk menyimpan kecepatan jatuh
     private Vector3 velocity;
 
     void Start()
     {
         cameraTransform = GetComponentInChildren<Camera>().transform;
         controller = GetComponent<CharacterController>();
+
+        // Cari Animator di dalam anak objek (Model 3D kamu)
+        animator = GetComponentInChildren<Animator>();
+
+        // Cek jaga-jaga kalau lupa pasang Animator
+        if (animator == null)
+        {
+            Debug.LogWarning("Animator tidak ditemukan di Player atau Child-nya!");
+        }
 
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
@@ -83,32 +92,39 @@ public class playerfps : MonoBehaviour
     {
         if (Time.timeScale == 0f) return;
 
-        // 1. CEK APAKAH MENAPAK TANAH
-        // Kalau sudah di tanah, reset kecepatan jatuh biar tidak menumpuk sampai jutaan
         if (controller.isGrounded && velocity.y < 0)
         {
-            velocity.y = -2f; // Angka kecil negatif untuk memastikan tetap nempel di tanah
+            velocity.y = -2f;
         }
 
-        // 2. LOGIKA GERAK (Kanan/Kiri/Depan/Belakang)
         float moveX = Input.GetAxis("Horizontal");
         float moveZ = Input.GetAxis("Vertical");
 
+        // Cek apakah player sedang bergerak (WASD ditekan)
+        // Magnitude > 0.1f artinya ada tombol yang ditekan
+        bool isMoving = Mathf.Abs(moveX) > 0.1f || Mathf.Abs(moveZ) > 0.1f;
+
+        // Cek apakah player sedang lari (Bergerak + Shift Kiri)
+        bool isSprinting = isMoving && Input.GetKey(KeyCode.LeftShift);
+
+        // --- UPDATE ANIMASI ---
+        if (animator != null)
+        {
+            // Set parameter isWalk (true jika bergerak)
+            animator.SetBool("isWalk", isMoving);
+
+            // Set parameter isRun (true jika bergerak + shift)
+            animator.SetBool("isRun", isSprinting);
+        }
+
         float currentSpeed = moveSpeed;
-        if (Input.GetKey(KeyCode.LeftShift))
+        if (isSprinting)
             currentSpeed *= sprintMultiplier;
 
         Vector3 move = transform.right * moveX + transform.forward * moveZ;
-
-        // Gerakkan karakter (Horizontal)
         controller.Move(move * currentSpeed * Time.deltaTime);
 
-        // 3. LOGIKA GRAVITASI (Atas/Bawah)
-        // Rumus fisika: v = a * t
         velocity.y += gravity * Time.deltaTime;
-
-        // Gerakkan karakter (Vertikal/Jatuh)
-        // Rumus fisika: delta_y = 1/2 * g * t^2 (diwakili velocity * Time.deltaTime disini)
         controller.Move(velocity * Time.deltaTime);
     }
 
