@@ -17,7 +17,7 @@ public class FlashlightController : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetMouseButtonDown(0)) // klik kiri
+        if (Input.GetKeyDown(KeyCode.F)) // tekan F
         {
             isOn = !isOn; // toggle
             flashlight.enabled = isOn;

@@ -1348,8 +1348,8 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_text: "W / A / S / D \u2014 Move\nLeft Mouse Hold \u2014 Look Around\nE \u2014
-    Interact (pick up items, open doors)\nShift \u2014 Sprint\nLeft Click \u2014
-    Flashlight On"
+    Interact (pick up items, open doors)\nShift \u2014 Sprint\nF \u2014 Flashlight
+    On"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8b3bcd1833a406f478e125db01fc0b6d, type: 2}
   m_sharedMaterial: {fileID: 5608202080528317625, guid: 8b3bcd1833a406f478e125db01fc0b6d, type: 2}
