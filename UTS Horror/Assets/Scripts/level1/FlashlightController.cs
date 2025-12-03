@@ -9,6 +9,10 @@ public class FlashlightController : MonoBehaviour
     {
         if (flashlight == null)
             Debug.LogWarning("Flashlight BELUM di-assign ke script!");
+
+        // Pastikan senter OFF saat game mulai
+        flashlight.enabled = false;
+        isOn = false;
     }
 
     void Update()
