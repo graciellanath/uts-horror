@@ -11,43 +11,48 @@ public class playerfps : MonoBehaviour
     public float maxY = 60f;
 
     [Header("Movement Settings")]
-    public float moveSpeed = 5f;
-    public float sprintMultiplier = 2f;
+
+    public float walkSpeed = 2f;
+    public float runSpeed = 4f;
     public float gravity = -9.81f;
+
+    private float terminalVelocity = -20f;
 
     [Header("Health Settings")]
     public int maxHealth = 100;
     public int health = 100;
     public TextMeshProUGUI healthText;
 
+    // Variables Internal
     private float rotationX = 0f;
     private float rotationY = 0f;
     private Transform cameraTransform;
     private CharacterController controller;
-    private Animator animator; // Variabel Animator
+    private Animator animator;
     private bool isLooking = false;
-
-    private Vector3 velocity;
+    private Vector3 velocity; // Untuk menghitung gravitasi
 
     void Start()
     {
+        // Mengambil komponen yang dibutuhkan
         cameraTransform = GetComponentInChildren<Camera>().transform;
         controller = GetComponent<CharacterController>();
-
-        // Cari Animator di dalam anak objek (Model 3D kamu)
         animator = GetComponentInChildren<Animator>();
 
-        // Cek jaga-jaga kalau lupa pasang Animator
-        if (animator == null)
-        {
-            Debug.LogWarning("Animator tidak ditemukan di Player atau Child-nya!");
-        }
+        if (animator == null) Debug.LogWarning("Animator tidak ditemukan!");
 
+        // Membuka kunci kursor mouse di awal
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
 
         UpdateHealthUI();
-        rotationX = transform.eulerAngles.y;
+
+        // Samakan rotasi kamera dengan rotasi player saat mulai
+        if (cameraTransform != null)
+        {
+            rotationX = transform.eulerAngles.y;
+            rotationY = cameraTransform.localEulerAngles.x;
+        }
     }
 
     void Update()
@@ -60,17 +65,18 @@ public class playerfps : MonoBehaviour
     {
         if (Time.timeScale == 0f) return;
 
+        // Tahan Klik Kanan untuk memutar kamera
         if (Input.GetMouseButtonDown(1))
         {
             isLooking = true;
-            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.lockState = CursorLockMode.Locked; // Mengunci kursor di tengah
             Cursor.visible = false;
         }
 
         if (Input.GetMouseButtonUp(1))
         {
             isLooking = false;
-            Cursor.lockState = CursorLockMode.None;
+            Cursor.lockState = CursorLockMode.None; // Melepas kursor
             Cursor.visible = true;
         }
 
@@ -83,7 +89,10 @@ public class playerfps : MonoBehaviour
             rotationY -= mouseY;
             rotationY = Mathf.Clamp(rotationY, minY, maxY);
 
+            // Memutar badan karakter (Kiri/Kanan)
             transform.rotation = Quaternion.Euler(0, rotationX, 0);
+
+            // Memutar kamera (Atas/Bawah)
             cameraTransform.localRotation = Quaternion.Euler(rotationY, 0, 0);
         }
     }
@@ -92,42 +101,50 @@ public class playerfps : MonoBehaviour
     {
         if (Time.timeScale == 0f) return;
 
+        // --- 1. HANDLE GRAVITASI (Tanah) ---
         if (controller.isGrounded && velocity.y < 0)
         {
-            velocity.y = -2f;
+            velocity.y = -2f; // Reset gravitasi agar menempel di tanah
         }
 
-        float moveX = Input.GetAxis("Horizontal");
-        float moveZ = Input.GetAxis("Vertical");
+        // --- 2. INPUT PERGERAKAN ---
+        // Pakai GetAxisRaw agar responsif (tidak licin)
+        float moveX = Input.GetAxisRaw("Horizontal");
+        float moveZ = Input.GetAxisRaw("Vertical");
 
-        // Cek apakah player sedang bergerak (WASD ditekan)
-        // Magnitude > 0.1f artinya ada tombol yang ditekan
-        bool isMoving = Mathf.Abs(moveX) > 0.1f || Mathf.Abs(moveZ) > 0.1f;
+        // Cek apakah ada input gerakan
+        bool hasInput = (Mathf.Abs(moveX) > 0.1f || Mathf.Abs(moveZ) > 0.1f);
 
-        // Cek apakah player sedang lari (Bergerak + Shift Kiri)
-        bool isSprinting = isMoving && Input.GetKey(KeyCode.LeftShift);
+        // Cek lari (Input ada + Shift ditekan)
+        bool isSprinting = hasInput && Input.GetKey(KeyCode.LeftShift);
 
-        // --- UPDATE ANIMASI ---
+        // --- 3. PILIH KECEPATAN ---
+        float targetSpeed = isSprinting ? runSpeed : walkSpeed;
+
+        // --- 4. ANIMASI ---
         if (animator != null)
         {
-            // Set parameter isWalk (true jika bergerak)
-            animator.SetBool("isWalk", isMoving);
-
-            // Set parameter isRun (true jika bergerak + shift)
+            animator.SetBool("isWalk", hasInput);
             animator.SetBool("isRun", isSprinting);
         }
 
-        float currentSpeed = moveSpeed;
-        if (isSprinting)
-            currentSpeed *= sprintMultiplier;
+        // --- 5. HITUNG GERAKAN ---
+        // Hitung arah gerak horizontal (X & Z)
+        Vector3 moveDirection = (transform.right * moveX + transform.forward * moveZ).normalized;
 
-        Vector3 move = transform.right * moveX + transform.forward * moveZ;
-        controller.Move(move * currentSpeed * Time.deltaTime);
-
+        // Hitung gravitasi (Y)
         velocity.y += gravity * Time.deltaTime;
-        controller.Move(velocity * Time.deltaTime);
+        if (velocity.y < terminalVelocity) velocity.y = terminalVelocity;
+
+        // --- 6. EKSEKUSI (Final Move) ---
+        // Gabungkan Gerakan Horizontal + Vertikal menjadi satu Vektor
+        // Ini adalah KUNCI agar tidak stuttering (hanya panggil Move 1x per frame)
+        Vector3 finalVelocity = (moveDirection * targetSpeed) + velocity;
+
+        controller.Move(finalVelocity * Time.deltaTime);
     }
 
+    // Fungsi Pengurangan Darah
     public void TakeDamage(int amount)
     {
         health -= amount;
@@ -143,6 +160,7 @@ public class playerfps : MonoBehaviour
         }
     }
 
+    // Fungsi Tambah Darah
     public void Heal(int amount)
     {
         if (health >= maxHealth) return;
@@ -151,6 +169,7 @@ public class playerfps : MonoBehaviour
         UpdateHealthUI();
     }
 
+    // Update UI Teks
     void UpdateHealthUI()
     {
         if (healthText != null)
@@ -162,6 +181,7 @@ public class playerfps : MonoBehaviour
         }
     }
 
+    // Pembersihan saat script hancur/pindah scene
     void OnDestroy()
     {
         Cursor.lockState = CursorLockMode.None;
