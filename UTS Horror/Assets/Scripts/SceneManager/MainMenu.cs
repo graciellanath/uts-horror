@@ -6,7 +6,7 @@ public class MainMenu : MonoBehaviour
     // Tombol Play
     public void PlayGame()
     {
-        SceneManager.LoadScene("Map_Hosp1"); 
+        SceneManager.LoadScene("Level1"); 
     }
 
     // Tombol How To Play

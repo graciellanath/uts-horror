@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class GameOverManager : MonoBehaviour
+public class GameOverManagerLv1 : MonoBehaviour
 {
     private void Start()
     {
@@ -11,7 +11,7 @@ public class GameOverManager : MonoBehaviour
     public void RetryGame()
 {
     Debug.Log("Retry diklik!");
-    SceneManager.LoadScene("Map_Hosp1");
+    SceneManager.LoadScene("Level1");
 }
 
 
