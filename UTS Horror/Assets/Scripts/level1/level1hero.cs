@@ -1,68 +1,97 @@
 using UnityEngine;
 
+// Wajib ada Rigidbody supaya script jalan
+[RequireComponent(typeof(Rigidbody))]
+[RequireComponent(typeof(CapsuleCollider))]
+
 public class level1hero : MonoBehaviour
 {
-    public float walkSpeed = 3f;
-    public float sprintSpeed = 6f;
+    [Header("Movement Settings")]
+    public float walkSpeed = 5f; // Kecepatan jalan
+    public float sprintSpeed = 8f; // Kecepatan lari
     public float mouseSensitivity = 150f;
 
-    public Transform cam; // Drag Camera dari Inspector
+    [Header("References")]
+    public Transform cam; // Drag Main Camera ke sini
 
+    private Rigidbody rb;
     private float currentSpeed;
     private float xRotation = 0f;
 
-    void Update()
+    void Start()
     {
-        Move();
-        // RotateKeyboard() dihapus karena WASD tidak boleh memutar karakter
-        MouseLook();
+        rb = GetComponent<Rigidbody>();
+
+        // Pastikan rigidbody tidak guling-guling kena fisika
+        rb.freezeRotation = true;
     }
 
-    void Move()
+    void Update()
     {
-        float h = Input.GetAxis("Horizontal"); // A/D untuk Kiri/Kanan
-        float v = Input.GetAxis("Vertical");   // W/S untuk Maju/Mundur
+        // Kita pisah: Update untuk Input & Rotasi
+        MouseLook();
+        InputMovement();
+    }
 
+    // FixedUpdate khusus untuk urusan Gerak Fisika (Rigidbody)
+    void FixedUpdate()
+    {
+        MovePhysics();
+    }
+
+    // Variabel untuk menyimpan input sementara
+    float inputH, inputV;
+
+    void InputMovement()
+    {
+        inputH = Input.GetAxisRaw("Horizontal"); // A/D
+        inputV = Input.GetAxisRaw("Vertical");   // W/S
         currentSpeed = Input.GetKey(KeyCode.LeftShift) ? sprintSpeed : walkSpeed;
+    }
 
-        // Perubahan di sini:
-        // Parameter Translate sekarang menerima (x, y, z)
-        // h (x) = geser samping, v (z) = maju mundur
-        transform.Translate(h * currentSpeed * Time.deltaTime, 0, v * currentSpeed * Time.deltaTime);
+    void MovePhysics()
+    {
+        // Hitung arah gerak berdasarkan arah hadap karakter saat ini
+        // transform.right = arah kanan lokal, transform.forward = arah depan lokal
+        Vector3 direction = (transform.right * inputH + transform.forward * inputV).normalized;
+
+        // Masukkan ke velocity Rigidbody
+        // Kita biarkan rb.velocity.y (sumbu Y) apa adanya supaya gravitasi tetap jalan
+        rb.linearVelocity = new Vector3(direction.x * currentSpeed, rb.linearVelocity.y, direction.z * currentSpeed);
     }
 
     void MouseLook()
     {
-        // 1. Kunci kursor saat klik kanan ditekan awal
+        // Logika Kursor (Sama seperti sebelumnya)
         if (Input.GetMouseButtonDown(1))
         {
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
         }
-
-        // 2. Lepas kursor saat klik kanan dilepas
         if (Input.GetMouseButtonUp(1))
         {
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
         }
 
-        // 3. Putar kamera & badan HANYA saat klik kanan ditahan
+        // Rotasi hanya saat klik kanan tahan
         if (Input.GetMouseButton(1))
         {
             float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity * Time.deltaTime;
             float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity * Time.deltaTime;
 
-            // Karakter berputar Kiri-Kanan mengikuti mouse
-            transform.Rotate(Vector3.up * mouseX);
+            // Putar BADAN (Sumbu Y)
+            // Menggunakan MoveRotation lebih aman untuk Rigidbody dibanding transform.Rotate
+            Quaternion deltaRotation = Quaternion.Euler(Vector3.up * mouseX);
+            rb.MoveRotation(rb.rotation * deltaRotation);
 
-            // Kamera berputar Atas-Bawah (dongak/nunduk)
+            // Putar KAMERA (Sumbu X / Dongak-Nunduk)
             xRotation -= mouseY;
-            xRotation = Mathf.Clamp(xRotation, -60f, 60f);
+            xRotation = Mathf.Clamp(xRotation, -85f, 85f);
 
             if (cam != null)
             {
-                cam.localRotation = Quaternion.Euler(xRotation, 0, 0);
+                cam.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
             }
         }
     }
