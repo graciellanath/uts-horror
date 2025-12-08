@@ -1,6 +1,5 @@
 using UnityEngine;
 
-// Memaksa Unity menambahkan komponen wajib
 [RequireComponent(typeof(Rigidbody))]
 [RequireComponent(typeof(CapsuleCollider))]
 
@@ -12,14 +11,15 @@ public class level1hero : MonoBehaviour
     public float maxY = 60f;
 
     [Header("Movement Settings")]
-    public float walkSpeed = 2f; // Disamakan dengan script playerfps
+    public float walkSpeed = 2f;
     public float runSpeed = 4f;
 
-    // Reference
+    [Header("References")]
     public Transform cam; // Drag Main Camera ke sini
 
     // Variables Internal
     private Rigidbody rb;
+    private Animator animator; // Variabel untuk Animator
     private float rotationX = 0f;
     private float rotationY = 0f;
     private bool isLooking = false;
@@ -32,14 +32,23 @@ public class level1hero : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
 
-        // Kunci rotasi fisika agar karakter tidak jatuh terguling
-        rb.freezeRotation = true;
+        // Cari Animator di object ini atau di anak-anaknya (BodyGuard)
+        animator = GetComponent<Animator>();
+        if (animator == null)
+        {
+            animator = GetComponentInChildren<Animator>();
+        }
 
-        // Pastikan kursor muncul di awal
+        // Matikan Root Motion via script untuk memastikan rotasi aman
+        if (animator != null)
+        {
+            animator.applyRootMotion = false;
+        }
+
+        rb.freezeRotation = true;
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
 
-        // Samakan rotasi awal script
         rotationX = transform.eulerAngles.y;
         if (cam != null)
         {
@@ -50,7 +59,8 @@ public class level1hero : MonoBehaviour
     void Update()
     {
         HandleMouseLook();
-        HandleInput();
+        HandleInput();     // Baca Input
+        HandleAnimation(); // Update Animasi berdasarkan Input
     }
 
     void FixedUpdate()
@@ -60,7 +70,6 @@ public class level1hero : MonoBehaviour
 
     void HandleMouseLook()
     {
-        // 1. Logic Klik Kanan (Tahan untuk putar)
         if (Input.GetMouseButtonDown(1))
         {
             isLooking = true;
@@ -75,7 +84,6 @@ public class level1hero : MonoBehaviour
             Cursor.visible = true;
         }
 
-        // 2. Eksekusi Rotasi
         if (isLooking)
         {
             float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity;
@@ -85,11 +93,9 @@ public class level1hero : MonoBehaviour
             rotationY -= mouseY;
             rotationY = Mathf.Clamp(rotationY, minY, maxY);
 
-            // Putar BADAN (Kiri-Kanan) menggunakan Rigidbody Rotation (Lebih aman untuk fisika)
             Quaternion targetRotation = Quaternion.Euler(0, rotationX, 0);
             rb.MoveRotation(targetRotation);
 
-            // Putar KAMERA (Atas-Bawah)
             if (cam != null)
             {
                 cam.localRotation = Quaternion.Euler(rotationY, 0, 0);
@@ -99,26 +105,37 @@ public class level1hero : MonoBehaviour
 
     void HandleInput()
     {
-        // Menggunakan GetAxisRaw agar gerakan responsif (langsung berhenti, tidak licin)
-        inputH = Input.GetAxisRaw("Horizontal"); // A/D
-        inputV = Input.GetAxisRaw("Vertical");   // W/S
+        inputH = Input.GetAxisRaw("Horizontal");
+        inputV = Input.GetAxisRaw("Vertical");
 
-        // Cek input sprint
-        bool hasInput = (Mathf.Abs(inputH) > 0.1f || Mathf.Abs(inputV) > 0.1f);
-        isSprinting = hasInput && Input.GetKey(KeyCode.LeftShift);
+        // Cek apakah ada pergerakan (WASD)
+        bool hasMovementInput = (Mathf.Abs(inputH) > 0.1f || Mathf.Abs(inputV) > 0.1f);
+
+        // Syarat Sprint: Harus ada gerakan DULU, baru cek Shift
+        // Ini menjawab request: "jika tekan shift kiri saja, dia tidak terjadi apa apa"
+        isSprinting = hasMovementInput && Input.GetKey(KeyCode.LeftShift);
+    }
+
+    void HandleAnimation()
+    {
+        if (animator == null) return;
+
+        // Cek apakah player sedang bergerak (Nilai absolut > 0)
+        bool isWalking = (Mathf.Abs(inputH) > 0.1f || Mathf.Abs(inputV) > 0.1f);
+
+        // Kirim ke Animator Controller
+        // Logic: 
+        // 1. isWalk true jika ada input WASD
+        // 2. isRun true jika isWalk true DAN Shift ditekan
+        animator.SetBool("isWalk", isWalking);
+        animator.SetBool("isRun", isSprinting);
     }
 
     void HandleMovementPhysics()
     {
-        // 1. Tentukan Speed
         float targetSpeed = isSprinting ? runSpeed : walkSpeed;
 
-        // 2. Hitung Arah Gerak (Lokal ke Global)
         Vector3 moveDirection = (transform.right * inputH + transform.forward * inputV).normalized;
-
-        // 3. Terapkan ke Velocity Rigidbody
-        // Kita timpa velocity X dan Z dengan kecepatan target (ini membuat gerakan snappy/tidak licin)
-        // Tapi kita biarkan velocity Y (gravitasi) apa adanya.
         Vector3 targetVelocity = moveDirection * targetSpeed;
 
         rb.linearVelocity = new Vector3(targetVelocity.x, rb.linearVelocity.y, targetVelocity.z);
