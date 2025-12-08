@@ -1,98 +1,126 @@
 using UnityEngine;
 
-// Wajib ada Rigidbody supaya script jalan
+// Memaksa Unity menambahkan komponen wajib
 [RequireComponent(typeof(Rigidbody))]
 [RequireComponent(typeof(CapsuleCollider))]
 
 public class level1hero : MonoBehaviour
 {
-    [Header("Movement Settings")]
-    public float walkSpeed = 5f; // Kecepatan jalan
-    public float sprintSpeed = 8f; // Kecepatan lari
-    public float mouseSensitivity = 150f;
+    [Header("Mouse Look Settings")]
+    public float mouseSensitivity = 2f;
+    public float minY = -60f;
+    public float maxY = 60f;
 
-    [Header("References")]
+    [Header("Movement Settings")]
+    public float walkSpeed = 2f; // Disamakan dengan script playerfps
+    public float runSpeed = 4f;
+
+    // Reference
     public Transform cam; // Drag Main Camera ke sini
 
+    // Variables Internal
     private Rigidbody rb;
-    private float currentSpeed;
-    private float xRotation = 0f;
+    private float rotationX = 0f;
+    private float rotationY = 0f;
+    private bool isLooking = false;
+
+    // Input Variables
+    private float inputH, inputV;
+    private bool isSprinting;
 
     void Start()
     {
         rb = GetComponent<Rigidbody>();
 
-        // Pastikan rigidbody tidak guling-guling kena fisika
+        // Kunci rotasi fisika agar karakter tidak jatuh terguling
         rb.freezeRotation = true;
+
+        // Pastikan kursor muncul di awal
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+
+        // Samakan rotasi awal script
+        rotationX = transform.eulerAngles.y;
+        if (cam != null)
+        {
+            rotationY = cam.localEulerAngles.x;
+        }
     }
 
     void Update()
     {
-        // Kita pisah: Update untuk Input & Rotasi
-        MouseLook();
-        InputMovement();
+        HandleMouseLook();
+        HandleInput();
     }
 
-    // FixedUpdate khusus untuk urusan Gerak Fisika (Rigidbody)
     void FixedUpdate()
     {
-        MovePhysics();
+        HandleMovementPhysics();
     }
 
-    // Variabel untuk menyimpan input sementara
-    float inputH, inputV;
-
-    void InputMovement()
+    void HandleMouseLook()
     {
-        inputH = Input.GetAxisRaw("Horizontal"); // A/D
-        inputV = Input.GetAxisRaw("Vertical");   // W/S
-        currentSpeed = Input.GetKey(KeyCode.LeftShift) ? sprintSpeed : walkSpeed;
-    }
-
-    void MovePhysics()
-    {
-        // Hitung arah gerak berdasarkan arah hadap karakter saat ini
-        // transform.right = arah kanan lokal, transform.forward = arah depan lokal
-        Vector3 direction = (transform.right * inputH + transform.forward * inputV).normalized;
-
-        // Masukkan ke velocity Rigidbody
-        // Kita biarkan rb.velocity.y (sumbu Y) apa adanya supaya gravitasi tetap jalan
-        rb.linearVelocity = new Vector3(direction.x * currentSpeed, rb.linearVelocity.y, direction.z * currentSpeed);
-    }
-
-    void MouseLook()
-    {
-        // Logika Kursor (Sama seperti sebelumnya)
+        // 1. Logic Klik Kanan (Tahan untuk putar)
         if (Input.GetMouseButtonDown(1))
         {
+            isLooking = true;
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
         }
+
         if (Input.GetMouseButtonUp(1))
         {
+            isLooking = false;
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
         }
 
-        // Rotasi hanya saat klik kanan tahan
-        if (Input.GetMouseButton(1))
+        // 2. Eksekusi Rotasi
+        if (isLooking)
         {
-            float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity * Time.deltaTime;
-            float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity * Time.deltaTime;
+            float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity;
+            float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity;
 
-            // Putar BADAN (Sumbu Y)
-            // Menggunakan MoveRotation lebih aman untuk Rigidbody dibanding transform.Rotate
-            Quaternion deltaRotation = Quaternion.Euler(Vector3.up * mouseX);
-            rb.MoveRotation(rb.rotation * deltaRotation);
+            rotationX += mouseX;
+            rotationY -= mouseY;
+            rotationY = Mathf.Clamp(rotationY, minY, maxY);
 
-            // Putar KAMERA (Sumbu X / Dongak-Nunduk)
-            xRotation -= mouseY;
-            xRotation = Mathf.Clamp(xRotation, -85f, 85f);
+            // Putar BADAN (Kiri-Kanan) menggunakan Rigidbody Rotation (Lebih aman untuk fisika)
+            Quaternion targetRotation = Quaternion.Euler(0, rotationX, 0);
+            rb.MoveRotation(targetRotation);
 
+            // Putar KAMERA (Atas-Bawah)
             if (cam != null)
             {
-                cam.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
+                cam.localRotation = Quaternion.Euler(rotationY, 0, 0);
             }
         }
+    }
+
+    void HandleInput()
+    {
+        // Menggunakan GetAxisRaw agar gerakan responsif (langsung berhenti, tidak licin)
+        inputH = Input.GetAxisRaw("Horizontal"); // A/D
+        inputV = Input.GetAxisRaw("Vertical");   // W/S
+
+        // Cek input sprint
+        bool hasInput = (Mathf.Abs(inputH) > 0.1f || Mathf.Abs(inputV) > 0.1f);
+        isSprinting = hasInput && Input.GetKey(KeyCode.LeftShift);
+    }
+
+    void HandleMovementPhysics()
+    {
+        // 1. Tentukan Speed
+        float targetSpeed = isSprinting ? runSpeed : walkSpeed;
+
+        // 2. Hitung Arah Gerak (Lokal ke Global)
+        Vector3 moveDirection = (transform.right * inputH + transform.forward * inputV).normalized;
+
+        // 3. Terapkan ke Velocity Rigidbody
+        // Kita timpa velocity X dan Z dengan kecepatan target (ini membuat gerakan snappy/tidak licin)
+        // Tapi kita biarkan velocity Y (gravitasi) apa adanya.
+        Vector3 targetVelocity = moveDirection * targetSpeed;
+
+        rb.linearVelocity = new Vector3(targetVelocity.x, rb.linearVelocity.y, targetVelocity.z);
     }
 }
