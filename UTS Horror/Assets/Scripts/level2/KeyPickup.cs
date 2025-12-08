@@ -3,18 +3,25 @@
 public class KeyPickup : MonoBehaviour
 {
     public float interactDistance = 3f;
-    public Transform player;
+    private Transform player;
 
-    private bool isNear = false;
+    void Start()
+    {
+        // Cari Player Otomatis
+        GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
+        if (playerObj != null)
+        {
+            player = playerObj.transform;
+        }
+    }
 
     void Update()
     {
         if (player == null) return;
 
         float dist = Vector3.Distance(player.position, transform.position);
-        isNear = dist < interactDistance;
 
-        if (isNear && Input.GetKeyDown(KeyCode.E))
+        if (dist < interactDistance && Input.GetKeyDown(KeyCode.E))
         {
             Pickup();
         }
@@ -22,12 +29,8 @@ public class KeyPickup : MonoBehaviour
 
     void Pickup()
     {
-        // ubah status kunci di PlayerHasKey
-        PlayerHasKey.hasKey = true;
-
-        Debug.Log("🔑 Kunci diambil");
-
-        // hancurin object kunci saat diambil
-        Destroy(gameObject);
+        PlayerHasKey.hasKey = true; // Set status kunci jadi true
+        Debug.Log("Kunci diambil!");
+        Destroy(gameObject); // Hapus object kunci
     }
 }
