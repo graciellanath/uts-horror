@@ -15,6 +15,7 @@ public class MonsterAttack : MonoBehaviour
 
     public void TryAttack()
     {
+        // kosong, serangan dipanggil oleh animation event
     }
 
     // Fungsi ini dipanggil dari Animation Event untuk memberikan damage
@@ -24,6 +25,13 @@ public class MonsterAttack : MonoBehaviour
         {
             playerSc.TakeDamage(25);
             Debug.Log("Player terkena serangan!");
+
+            // 🔥 Panggil sound efek monster hit
+            Level2MusicController music = FindObjectOfType<Level2MusicController>();
+            if (music != null)
+            {
+                music.OnMonsterHit();
+            }
         }
         else
         {

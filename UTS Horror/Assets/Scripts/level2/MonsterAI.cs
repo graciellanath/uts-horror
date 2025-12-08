@@ -32,6 +32,12 @@ public class MonsterAI : MonoBehaviour
     [Header("Debug")]
     public bool showDebugLog = true;
 
+    
+public bool IsChasing()
+{
+    return isChasing;
+}
+
     private void Start()
     {
         rb = GetComponent<Rigidbody>();
