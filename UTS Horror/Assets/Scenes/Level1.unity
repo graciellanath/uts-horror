@@ -450,7 +450,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PauseManager
   pauseMenuPanel: {fileID: 920499175}
-  cameraController: {fileID: 0}
+  playerScript: {fileID: 219395832}
 --- !u!1 &213851461 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 2303921294396319335, guid: 2cf8072ebed1149479d25d30c324125c, type: 3}
