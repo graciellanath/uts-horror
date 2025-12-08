@@ -674,7 +674,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::level1hero
   walkSpeed: 3
   sprintSpeed: 6
-  rotateSpeed: 80
   mouseSensitivity: 150
   cam: {fileID: 1057976377}
 --- !u!136 &219395833
@@ -696,10 +695,10 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.5
+  m_Radius: 0.2146759
   m_Height: 1.8748703
   m_Direction: 1
-  m_Center: {x: 0, y: 0.9495506, z: 0}
+  m_Center: {x: 0.026687622, y: 0.9495506, z: -0.109788895}
 --- !u!54 &219395834
 Rigidbody:
   m_ObjectHideFlags: 0
