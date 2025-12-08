@@ -14,13 +14,12 @@ public class PauseManager : MonoBehaviour
 
     void Start()
     {
-        // Pastikan game berjalan normal saat mulai
         ResumeGame();
     }
 
     void Update()
     {
-        // Tombol ESC untuk Pause/Resume
+        // escape untuk pause/resume
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             if (isPaused)
@@ -39,16 +38,16 @@ public class PauseManager : MonoBehaviour
         isPaused = true;
         pauseMenuPanel.SetActive(true);
 
-        // 1. Matikan Waktu (Timer & Fisika berhenti total)
+        // 1. matiin waktu di game
         Time.timeScale = 0f;
 
-        // 2. Matikan Script Player (Agar tidak bisa rotasi/gerak sama sekali)
+        // 2. matiin script player
         if (playerScript != null)
         {
             playerScript.enabled = false;
         }
 
-        // 3. Pastikan Cursor Muncul & Bebas untuk klik menu
+        // 3. pastiin cursor muncul & bebas gerak
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
     }
@@ -57,23 +56,19 @@ public class PauseManager : MonoBehaviour
     {
         isPaused = false;
         pauseMenuPanel.SetActive(false);
-
-        // 1. Kembalikan Waktu Normal
         Time.timeScale = 1f;
 
-        // 2. Nyalakan kembali Script Player
         if (playerScript != null)
-        {
             playerScript.enabled = true;
-        }
 
-        // Tidak perlu mengatur Cursor di sini, 
-        // karena level1hero akan mengaturnya sendiri saat klik kanan.
+        // resume balik lock kursor & sembunyiin
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
     }
 
     public void BackToMainMenu()
     {
-        // PENTING: Kembalikan waktu sebelum pindah scene
+        // balikin waktu ke normal
         Time.timeScale = 1f;
         SceneManager.LoadScene("MainMenu");
     }

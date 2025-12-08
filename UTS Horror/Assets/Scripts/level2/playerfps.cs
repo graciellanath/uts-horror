@@ -38,13 +38,12 @@ public class playerfps : MonoBehaviour
 
         if (animator == null) Debug.LogWarning("Animator tidak ditemukan di anak objek!");
 
-        // Pastikan kursor muncul dan bebas di awal game
-        Cursor.lockState = CursorLockMode.None;
-        Cursor.visible = true;
+        // ilangin cursor di awal
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
 
         UpdateHealthUI();
 
-        // Samakan rotasi kamera awal
         if (cameraTransform != null)
         {
             rotationX = transform.eulerAngles.y;
@@ -54,27 +53,31 @@ public class playerfps : MonoBehaviour
 
     void Update()
     {
+        // pause gabisa ngapa ngapain
+        if (Time.timeScale == 0f) return;
+
+        // lock cursor
+        if (Cursor.lockState != CursorLockMode.Locked)
+        {
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+        }
+
         HandleMouseLook();
         HandleMovement();
     }
 
     void HandleMouseLook()
     {
-        if (Time.timeScale == 0f) return;
 
-        // Klik Kanan Tahan untuk Rotasi
         if (Input.GetMouseButtonDown(1))
         {
             isLooking = true;
-            Cursor.lockState = CursorLockMode.Locked;
-            Cursor.visible = false;
         }
 
         if (Input.GetMouseButtonUp(1))
         {
             isLooking = false;
-            Cursor.lockState = CursorLockMode.None;
-            Cursor.visible = true;
         }
 
         if (isLooking)
@@ -94,8 +97,6 @@ public class playerfps : MonoBehaviour
 
     void HandleMovement()
     {
-        if (Time.timeScale == 0f) return;
-
         // Reset gravitasi saat di tanah
         if (controller.isGrounded && velocity.y < 0)
         {
@@ -124,7 +125,6 @@ public class playerfps : MonoBehaviour
         velocity.y += gravity * Time.deltaTime;
         if (velocity.y < terminalVelocity) velocity.y = terminalVelocity;
 
-        // Eksekusi
         Vector3 finalVelocity = (moveDirection * targetSpeed) + velocity;
         controller.Move(finalVelocity * Time.deltaTime);
     }
@@ -135,16 +135,14 @@ public class playerfps : MonoBehaviour
         health = Mathf.Clamp(health, 0, maxHealth);
         UpdateHealthUI();
 
-        // LOGIKA MATI
         if (health <= 0)
         {
             Debug.Log("Player Mati! Memuat GameOverLvl2...");
 
-            // Penting: Lepaskan kursor agar bisa klik menu
+            // munculin cursor saat mati
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
 
-            // Pindah Scene
             SceneManager.LoadScene("GameOverLvl2");
         }
     }
@@ -166,5 +164,12 @@ public class playerfps : MonoBehaviour
             else if (health > 30) healthText.color = Color.yellow;
             else healthText.color = Color.red;
         }
+    }
+
+    // cursor muncul saat objek diancurin
+    void OnDestroy()
+    {
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
     }
 }

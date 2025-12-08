@@ -15,14 +15,13 @@ public class level1hero : MonoBehaviour
     public float runSpeed = 4f;
 
     [Header("References")]
-    public Transform cam; // Drag Main Camera ke sini
+    public Transform cam;
 
     // Variables Internal
     private Rigidbody rb;
-    private Animator animator; // Variabel untuk Animator
+    private Animator animator;
     private float rotationX = 0f;
     private float rotationY = 0f;
-    private bool isLooking = false;
 
     // Input Variables
     private float inputH, inputV;
@@ -32,22 +31,22 @@ public class level1hero : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
 
-        // Cari Animator di object ini atau di anak-anaknya (BodyGuard)
         animator = GetComponent<Animator>();
         if (animator == null)
         {
             animator = GetComponentInChildren<Animator>();
         }
 
-        // Matikan Root Motion via script untuk memastikan rotasi aman
         if (animator != null)
         {
             animator.applyRootMotion = false;
         }
 
         rb.freezeRotation = true;
-        Cursor.lockState = CursorLockMode.None;
-        Cursor.visible = true;
+
+        // lock cursor di awal
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
 
         rotationX = transform.eulerAngles.y;
         if (cam != null)
@@ -58,33 +57,33 @@ public class level1hero : MonoBehaviour
 
     void Update()
     {
+        // jika pause, gabisa ngapa ngapain
+        if (Time.timeScale == 0f) return;
+
+        // lock cursor
+        if (Cursor.lockState != CursorLockMode.Locked)
+        {
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+        }
+
         HandleMouseLook();
-        HandleInput();     // Baca Input
-        HandleAnimation(); // Update Animasi berdasarkan Input
+        HandleInput();
+        HandleAnimation();
     }
 
     void FixedUpdate()
     {
+        if (Time.timeScale == 0f) return;
         HandleMovementPhysics();
     }
 
     void HandleMouseLook()
     {
-        if (Input.GetMouseButtonDown(1))
-        {
-            isLooking = true;
-            Cursor.lockState = CursorLockMode.Locked;
-            Cursor.visible = false;
-        }
+        // [UBAHAN 3] tidak munculin kursor sama sekali
 
-        if (Input.GetMouseButtonUp(1))
-        {
-            isLooking = false;
-            Cursor.lockState = CursorLockMode.None;
-            Cursor.visible = true;
-        }
-
-        if (isLooking)
+        // rotasi klik kanan mouse ditahan dan digerakkan
+        if (Input.GetMouseButton(1))
         {
             float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity;
             float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity;
@@ -108,11 +107,7 @@ public class level1hero : MonoBehaviour
         inputH = Input.GetAxisRaw("Horizontal");
         inputV = Input.GetAxisRaw("Vertical");
 
-        // Cek apakah ada pergerakan (WASD)
         bool hasMovementInput = (Mathf.Abs(inputH) > 0.1f || Mathf.Abs(inputV) > 0.1f);
-
-        // Syarat Sprint: Harus ada gerakan DULU, baru cek Shift
-        // Ini menjawab request: "jika tekan shift kiri saja, dia tidak terjadi apa apa"
         isSprinting = hasMovementInput && Input.GetKey(KeyCode.LeftShift);
     }
 
@@ -120,13 +115,8 @@ public class level1hero : MonoBehaviour
     {
         if (animator == null) return;
 
-        // Cek apakah player sedang bergerak (Nilai absolut > 0)
         bool isWalking = (Mathf.Abs(inputH) > 0.1f || Mathf.Abs(inputV) > 0.1f);
 
-        // Kirim ke Animator Controller
-        // Logic: 
-        // 1. isWalk true jika ada input WASD
-        // 2. isRun true jika isWalk true DAN Shift ditekan
         animator.SetBool("isWalk", isWalking);
         animator.SetBool("isRun", isSprinting);
     }
@@ -139,5 +129,12 @@ public class level1hero : MonoBehaviour
         Vector3 targetVelocity = moveDirection * targetSpeed;
 
         rb.linearVelocity = new Vector3(targetVelocity.x, rb.linearVelocity.y, targetVelocity.z);
+    }
+
+    void OnDestroy()
+    {
+        // munculin kursor saat objek diancurin
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
     }
 }
