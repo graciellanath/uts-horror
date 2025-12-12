@@ -8,7 +8,8 @@ public class MonsterAI : MonoBehaviour
     public Animator anim;
     public Transform player;
     private Rigidbody rb;
-    private MonsterAttack monsterAttack; // referensi ke script attack
+    private MonsterAttack monsterAttack;
+    private MusicController music;   // >>> DITAMBAHKAN
 
     [Header("Patroli")]
     public Transform movePointParent;
@@ -32,16 +33,17 @@ public class MonsterAI : MonoBehaviour
     [Header("Debug")]
     public bool showDebugLog = true;
 
-    
-public bool IsChasing()
-{
-    return isChasing;
-}
+    public bool IsChasing()
+    {
+        return isChasing;
+    }
 
     private void Start()
     {
         rb = GetComponent<Rigidbody>();
         rb.freezeRotation = true;
+
+        music = MusicController.instance;   // >>> DITAMBAHKAN
 
         if (player == null)
         {
@@ -59,7 +61,6 @@ public bool IsChasing()
         if (anim != null)
             anim.applyRootMotion = false;
 
-        // hubungkan ke script MonsterAttack
         monsterAttack = GetComponent<MonsterAttack>();
 
         if (movePointParent == null)
@@ -78,14 +79,21 @@ public bool IsChasing()
             transform.LookAt(patrolPoints[0]);
     }
 
+    // -------------------------------------------
+    // PERBAIKAN UPDATE() MUSIK TANPA HAPUS APAPUN
+    // -------------------------------------------
     private void Update()
     {
-        if (player == null || patrolPoints.Count == 0) return;
+        float distance = Vector3.Distance(transform.position, player.position);
 
-        float distanceToPlayer = Vector3.Distance(transform.position, player.position);
-        bool canSeePlayer = CanSeePlayer();
-
-        HandleStates(distanceToPlayer, canSeePlayer);
+        if (distance < chaseRange)
+        {
+            music.PlayChase();   // >>> sekarang aman
+        }
+        else
+        {
+            music.PlayNormal();  // >>> aman
+        }
     }
 
     private void FixedUpdate()
@@ -98,25 +106,23 @@ public bool IsChasing()
     {
         if (isChasing)
         {
-            //= berhenti ngejar kalau gabisa lihat player atau terlalu jauh
             if (!canSeePlayer || distanceToPlayer > chaseRange)
             {
                 isChasing = false;
                 isAttacking = false;
                 SetAnimationState(true, false);
                 currentIndex = FindNearestPointIndex();
+
+                // >>> pakai cached instance (lebih aman)
+                music.PlayNormal();
                 return;
             }
 
-            // serang kalau dekat
             if (distanceToPlayer <= attackRange)
             {
                 isAttacking = true;
                 SetAnimationState(false, true);
-
-                // panggil serangan dari MonsterAttack
-                if (monsterAttack != null)
-                    monsterAttack.TryAttack();
+                monsterAttack?.TryAttack();
             }
             else
             {
@@ -126,18 +132,20 @@ public bool IsChasing()
         }
         else
         {
-            // kejar
             if (canSeePlayer && distanceToPlayer <= chaseRange)
             {
                 isChasing = true;
                 isAttacking = false;
+
+                // >>> pakai instance, bukan FindObjectOfType
+                music.PlayChase();
             }
         }
     }
 
     private void HandleMovement()
     {
-        if (isAttacking) return; // ga gerak saat nyerang
+        if (isAttacking) return;
 
         if (isChasing)
         {

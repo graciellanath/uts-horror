@@ -156,15 +156,23 @@ public class playerfps : MonoBehaviour
     }
 
     void UpdateHealthUI()
+{
+    if (healthText != null)
     {
-        if (healthText != null)
-        {
-            healthText.text = $"Health: {health}%";
-            if (health > 70) healthText.color = Color.green;
-            else if (health > 30) healthText.color = Color.yellow;
-            else healthText.color = Color.red;
-        }
+        healthText.text = $"Health: {health}%";
+        if (health > 70) healthText.color = Color.green;
+        else if (health > 30) healthText.color = Color.yellow;
+        else healthText.color = Color.red;
     }
+
+    // 🔥 beritahu MusicController kalau darah rendah
+    if (MusicController.instance != null)
+    {
+        MusicController.instance.SetLowHealth(health <= 30);
+    }
+}
+
+
 
     // cursor muncul saat objek diancurin
     void OnDestroy()
