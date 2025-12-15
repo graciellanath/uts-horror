@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
@@ -9,7 +10,7 @@ public class MonsterAI : MonoBehaviour
     public Transform player;
     private Rigidbody rb;
     private MonsterAttack monsterAttack;
-    private MusicController music;   // >>> DITAMBAHKAN
+    private MusicController music;
 
     [Header("Patroli")]
     public Transform movePointParent;
@@ -23,27 +24,29 @@ public class MonsterAI : MonoBehaviour
     public float attackRange = 2f;
     public float rotationSpeed = 5f;
 
+    [Header("Parameter Serangan")]
+    public float damageDelay = 0.5f;
+    public float attackCooldown = 2.0f;
+
     [Header("Layer Mask")]
     public LayerMask obstacleMask;
 
     [Header("Status Internal")]
-    private bool isChasing = false;
-    private bool isAttacking = false;
+    public bool isChasing = false;
+    public bool isAttacking = false;
 
-    [Header("Debug")]
-    public bool showDebugLog = true;
-
+    // >>> INI FUNGSI PENYELAMAT AGAR MUSIC CONTROLLER TIDAK ERROR <<<
     public bool IsChasing()
     {
         return isChasing;
     }
+    // -------------------------------------------------------------
 
     private void Start()
     {
         rb = GetComponent<Rigidbody>();
         rb.freezeRotation = true;
-
-        music = MusicController.instance;   // >>> DITAMBAHKAN
+        music = MusicController.instance;
 
         if (player == null)
         {
@@ -54,12 +57,9 @@ public class MonsterAI : MonoBehaviour
         if (anim == null)
         {
             anim = GetComponent<Animator>();
-            if (anim == null)
-                anim = GetComponentInChildren<Animator>();
+            if (anim == null) anim = GetComponentInChildren<Animator>();
         }
-
-        if (anim != null)
-            anim.applyRootMotion = false;
+        if (anim != null) anim.applyRootMotion = false;
 
         monsterAttack = GetComponent<MonsterAttack>();
 
@@ -68,38 +68,24 @@ public class MonsterAI : MonoBehaviour
             GameObject mp = GameObject.FindGameObjectWithTag("MovePoint");
             if (mp != null) movePointParent = mp.transform;
         }
-
         if (movePointParent != null)
         {
-            foreach (Transform t in movePointParent)
-                patrolPoints.Add(t);
+            foreach (Transform t in movePointParent) patrolPoints.Add(t);
         }
-
-        if (patrolPoints.Count > 0)
-            transform.LookAt(patrolPoints[0]);
     }
 
-    // -------------------------------------------
-    // BAGIAN YANG DIPERBAIKI (Baris 95 Error Disini)
-    // -------------------------------------------
     private void Update()
     {
-        // PERBAIKAN 1: Cek jika player belum ditemukan, hentikan proses agar tidak error
         if (player == null) return;
 
         float distance = Vector3.Distance(transform.position, player.position);
 
-        // PERBAIKAN 2: Cek jika music controller ada, baru dijalankan
+        HandleStates(distance);
+
         if (music != null)
         {
-            if (distance < chaseRange)
-            {
-                music.PlayChase();
-            }
-            else
-            {
-                music.PlayNormal();
-            }
+            if (isChasing) music.PlayChase();
+            else music.PlayNormal();
         }
     }
 
@@ -109,50 +95,73 @@ public class MonsterAI : MonoBehaviour
         HandleMovement();
     }
 
-    private void HandleStates(float distanceToPlayer, bool canSeePlayer)
+    private void HandleStates(float distanceToPlayer)
     {
+        if (isAttacking) return;
+
+        bool canSee = CanSeePlayer(distanceToPlayer);
+
+        if (!isChasing && canSee)
+        {
+            isChasing = true;
+        }
+        else if (isChasing && (distanceToPlayer > chaseRange * 1.5f))
+        {
+            isChasing = false;
+        }
+
         if (isChasing)
         {
-            if (!canSeePlayer || distanceToPlayer > chaseRange)
-            {
-                isChasing = false;
-                isAttacking = false;
-                SetAnimationState(true, false);
-                currentIndex = FindNearestPointIndex();
-
-                // PERBAIKAN 3: Tambahkan null check untuk music
-                if (music != null) music.PlayNormal();
-                return;
-            }
-
             if (distanceToPlayer <= attackRange)
             {
-                isAttacking = true;
-                SetAnimationState(false, true);
-                monsterAttack?.TryAttack();
+                StartCoroutine(AttackRoutine());
             }
             else
             {
-                isAttacking = false;
-                SetAnimationState(true, false);
+                SetAnim(true, false);
             }
         }
         else
         {
-            if (canSeePlayer && distanceToPlayer <= chaseRange)
-            {
-                isChasing = true;
-                isAttacking = false;
+            SetAnim(true, false);
+        }
+    }
 
-                // PERBAIKAN 4: Tambahkan null check untuk music
-                if (music != null) music.PlayChase();
+    IEnumerator AttackRoutine()
+    {
+        isAttacking = true;
+        rb.linearVelocity = Vector3.zero;
+        SetAnim(false, true);
+
+        if (player != null)
+        {
+            Vector3 dir = (player.position - transform.position).normalized;
+            dir.y = 0;
+            transform.rotation = Quaternion.LookRotation(dir);
+        }
+
+        yield return new WaitForSeconds(damageDelay);
+
+        if (player != null)
+        {
+            float currentDistance = Vector3.Distance(transform.position, player.position);
+            if (currentDistance <= attackRange + 0.8f)
+            {
+                monsterAttack?.TryAttack();
             }
         }
+
+        yield return new WaitForSeconds(attackCooldown - damageDelay);
+        isAttacking = false;
     }
 
     private void HandleMovement()
     {
-        if (isAttacking) return;
+        if (isAttacking)
+        {
+            rb.linearVelocity = Vector3.zero;
+            return;
+        }
 
         if (isChasing)
         {
@@ -161,11 +170,10 @@ public class MonsterAI : MonoBehaviour
         else
         {
             if (patrolPoints.Count == 0) return;
-
             Vector3 target = patrolPoints[currentIndex].position;
             MoveTowards(target);
 
-            if (Vector3.Distance(transform.position, target) < 0.5f)
+            if (Vector3.Distance(transform.position, target) < 1f)
             {
                 GoToNextPoint();
             }
@@ -176,38 +184,30 @@ public class MonsterAI : MonoBehaviour
     {
         Vector3 dir = (targetPosition - transform.position).normalized;
         dir.y = 0;
-
         rb.MovePosition(rb.position + dir * moveSpeed * Time.fixedDeltaTime);
-
         if (dir != Vector3.zero)
-            RotateTowards(dir);
+        {
+            Quaternion targetRot = Quaternion.LookRotation(dir);
+            rb.MoveRotation(Quaternion.Slerp(transform.rotation, targetRot, rotationSpeed * Time.deltaTime));
+        }
     }
 
-    private void RotateTowards(Vector3 dir)
-    {
-        Quaternion targetRot = Quaternion.LookRotation(dir);
-        rb.MoveRotation(Quaternion.Slerp(transform.rotation, targetRot, rotationSpeed * Time.deltaTime));
-    }
-
-    private void SetAnimationState(bool walking, bool attacking)
+    private void SetAnim(bool isWalking, bool triggerAttack)
     {
         if (anim == null) return;
-        anim.SetBool("isJalan", walking);
-        if (attacking)
-            anim.SetTrigger("isSerang");
+        anim.SetBool("isJalan", isWalking);
+        if (triggerAttack) anim.SetTrigger("isSerang");
     }
 
-    private bool CanSeePlayer()
+    private bool CanSeePlayer(float dist)
     {
-        if (player == null) return false;
-        Vector3 origin = transform.position + Vector3.up * 1.5f;
-        Vector3 target = player.position + Vector3.up * 1.5f;
+        if (dist > chaseRange) return false;
+        Vector3 origin = transform.position + Vector3.up * 1.0f;
+        Vector3 target = player.position + Vector3.up * 1.0f;
         Vector3 dir = target - origin;
-        float dist = dir.magnitude;
-
         if (Physics.Raycast(origin, dir.normalized, out RaycastHit hit, dist, ~obstacleMask))
         {
-            return hit.collider.CompareTag("Player");
+            if (hit.collider.CompareTag("Player")) return true;
         }
         return false;
     }
@@ -215,7 +215,6 @@ public class MonsterAI : MonoBehaviour
     private void GoToNextPoint()
     {
         if (patrolPoints.Count == 0) return;
-
         if (movingForward)
         {
             currentIndex++;
@@ -234,22 +233,6 @@ public class MonsterAI : MonoBehaviour
                 movingForward = true;
             }
         }
-    }
-
-    private int FindNearestPointIndex()
-    {
-        int nearest = 0;
-        float minDist = Mathf.Infinity;
-        for (int i = 0; i < patrolPoints.Count; i++)
-        {
-            float dist = Vector3.Distance(transform.position, patrolPoints[i].position);
-            if (dist < minDist)
-            {
-                minDist = dist;
-                nearest = i;
-            }
-        }
-        return nearest;
     }
 
     private void OnDrawGizmosSelected()
