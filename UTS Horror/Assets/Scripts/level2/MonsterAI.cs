@@ -80,19 +80,26 @@ public class MonsterAI : MonoBehaviour
     }
 
     // -------------------------------------------
-    // PERBAIKAN UPDATE() MUSIK TANPA HAPUS APAPUN
+    // BAGIAN YANG DIPERBAIKI (Baris 95 Error Disini)
     // -------------------------------------------
     private void Update()
     {
+        // PERBAIKAN 1: Cek jika player belum ditemukan, hentikan proses agar tidak error
+        if (player == null) return;
+
         float distance = Vector3.Distance(transform.position, player.position);
 
-        if (distance < chaseRange)
+        // PERBAIKAN 2: Cek jika music controller ada, baru dijalankan
+        if (music != null)
         {
-            music.PlayChase();   // >>> sekarang aman
-        }
-        else
-        {
-            music.PlayNormal();  // >>> aman
+            if (distance < chaseRange)
+            {
+                music.PlayChase();
+            }
+            else
+            {
+                music.PlayNormal();
+            }
         }
     }
 
@@ -113,8 +120,8 @@ public class MonsterAI : MonoBehaviour
                 SetAnimationState(true, false);
                 currentIndex = FindNearestPointIndex();
 
-                // >>> pakai cached instance (lebih aman)
-                music.PlayNormal();
+                // PERBAIKAN 3: Tambahkan null check untuk music
+                if (music != null) music.PlayNormal();
                 return;
             }
 
@@ -137,8 +144,8 @@ public class MonsterAI : MonoBehaviour
                 isChasing = true;
                 isAttacking = false;
 
-                // >>> pakai instance, bukan FindObjectOfType
-                music.PlayChase();
+                // PERBAIKAN 4: Tambahkan null check untuk music
+                if (music != null) music.PlayChase();
             }
         }
     }

@@ -43,10 +43,8 @@ public class level1hero : MonoBehaviour
         }
 
         rb.freezeRotation = true;
-
-        // lock cursor di awal
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.None; 
+        Cursor.visible = true;                  
 
         rotationX = transform.eulerAngles.y;
         if (cam != null)
@@ -59,13 +57,6 @@ public class level1hero : MonoBehaviour
     {
         // jika pause, gabisa ngapa ngapain
         if (Time.timeScale == 0f) return;
-
-        // lock cursor
-        if (Cursor.lockState != CursorLockMode.Locked)
-        {
-            Cursor.lockState = CursorLockMode.Locked;
-            Cursor.visible = false;
-        }
 
         HandleMouseLook();
         HandleInput();
@@ -80,11 +71,13 @@ public class level1hero : MonoBehaviour
 
     void HandleMouseLook()
     {
-        // [UBAHAN 3] tidak munculin kursor sama sekali
-
-        // rotasi klik kanan mouse ditahan dan digerakkan
+        // Kamera hanya berputar jika KLIK KANAN ditahan
         if (Input.GetMouseButton(1))
         {
+            // Saat klik kanan ditahan, kita sembunyikan kursor sementara (opsional, biar enak)
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+
             float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity;
             float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity;
 
@@ -98,6 +91,15 @@ public class level1hero : MonoBehaviour
             if (cam != null)
             {
                 cam.localRotation = Quaternion.Euler(rotationY, 0, 0);
+            }
+        }
+        else
+        {
+            // Jika klik kanan dilepas, kursor kembali bebas
+            if (Cursor.lockState == CursorLockMode.Locked)
+            {
+                Cursor.lockState = CursorLockMode.None;
+                Cursor.visible = true;
             }
         }
     }
@@ -133,7 +135,7 @@ public class level1hero : MonoBehaviour
 
     void OnDestroy()
     {
-        // munculin kursor saat objek diancurin
+        // Pastikan kursor tetap ada saat objek hancur
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
     }
