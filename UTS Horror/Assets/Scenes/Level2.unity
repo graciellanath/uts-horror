@@ -17690,10 +17690,13 @@ MonoBehaviour:
   chaseRange: 4
   attackRange: 2
   rotationSpeed: 5
+  damageDelay: 0.5
+  attackCooldown: 1.5
   obstacleMask:
     serializedVersion: 2
     m_Bits: 0
-  showDebugLog: 1
+  isChasing: 0
+  isAttacking: 0
 --- !u!54 &1831744446
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -18620,6 +18623,7 @@ GameObject:
   - component: {fileID: 1973471449}
   - component: {fileID: 1973471448}
   - component: {fileID: 1973471453}
+  - component: {fileID: 1973471454}
   m_Layer: 6
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -18753,6 +18757,25 @@ MonoBehaviour:
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
   m_Version: 2
+--- !u!114 &1973471454
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1973471447}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b357233251775664b9af818b17cff335, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Level2MusicController
+  audioSource: {fileID: 0}
+  defaultMusic: {fileID: 0}
+  chaseMusic: {fileID: 0}
+  monsterHitMusic: {fileID: 0}
+  lowHealthChaseMusic: {fileID: 0}
+  monster: {fileID: 0}
+  player: {fileID: 0}
 --- !u!1001 &1976346590
 PrefabInstance:
   m_ObjectHideFlags: 0
