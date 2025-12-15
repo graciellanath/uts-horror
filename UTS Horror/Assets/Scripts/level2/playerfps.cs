@@ -21,47 +21,36 @@ public class playerfps : MonoBehaviour
     public int health = 100;
     public TextMeshProUGUI healthText;
 
-    // Internal Variables
-    private float rotationX = 0f;
-    private float rotationY = 0f;
+    // Internal
+    private float rotationX;
+    private float rotationY;
     private Transform cameraTransform;
     private CharacterController controller;
     private Animator animator;
-    private bool isLooking = false;
+    private bool isLooking;
     private Vector3 velocity;
+    private bool isDead = false;
 
     void Start()
     {
-        cameraTransform = GetComponentInChildren<Camera>().transform;
         controller = GetComponent<CharacterController>();
+        cameraTransform = GetComponentInChildren<Camera>().transform;
         animator = GetComponentInChildren<Animator>();
 
-        if (animator == null) Debug.LogWarning("Animator tidak ditemukan di anak objek!");
-
-        // ilangin cursor di awal
+        // LOCK cursor saat main
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
 
+        health = maxHealth;
         UpdateHealthUI();
 
-        if (cameraTransform != null)
-        {
-            rotationX = transform.eulerAngles.y;
-            rotationY = cameraTransform.localEulerAngles.x;
-        }
+        rotationX = transform.eulerAngles.y;
+        rotationY = cameraTransform.localEulerAngles.x;
     }
 
     void Update()
     {
-        // pause gabisa ngapa ngapain
-        if (Time.timeScale == 0f) return;
-
-        // lock cursor
-        if (Cursor.lockState != CursorLockMode.Locked)
-        {
-            Cursor.lockState = CursorLockMode.Locked;
-            Cursor.visible = false;
-        }
+        if (Time.timeScale == 0f || isDead) return;
 
         HandleMouseLook();
         HandleMovement();
@@ -69,112 +58,100 @@ public class playerfps : MonoBehaviour
 
     void HandleMouseLook()
     {
+        if (Input.GetMouseButtonDown(1)) isLooking = true;
+        if (Input.GetMouseButtonUp(1)) isLooking = false;
 
-        if (Input.GetMouseButtonDown(1))
-        {
-            isLooking = true;
-        }
+        if (!isLooking) return;
 
-        if (Input.GetMouseButtonUp(1))
-        {
-            isLooking = false;
-        }
+        float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity;
+        float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity;
 
-        if (isLooking)
-        {
-            float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity;
-            float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity;
+        rotationX += mouseX;
+        rotationY -= mouseY;
+        rotationY = Mathf.Clamp(rotationY, minY, maxY);
 
-            rotationX += mouseX;
-            rotationY -= mouseY;
-            rotationY = Mathf.Clamp(rotationY, minY, maxY);
-
-            transform.rotation = Quaternion.Euler(0, rotationX, 0);
-            if (cameraTransform != null)
-                cameraTransform.localRotation = Quaternion.Euler(rotationY, 0, 0);
-        }
+        transform.rotation = Quaternion.Euler(0, rotationX, 0);
+        cameraTransform.localRotation = Quaternion.Euler(rotationY, 0, 0);
     }
 
     void HandleMovement()
     {
-        // Reset gravitasi saat di tanah
         if (controller.isGrounded && velocity.y < 0)
-        {
             velocity.y = -2f;
-        }
 
-        float moveX = Input.GetAxisRaw("Horizontal");
-        float moveZ = Input.GetAxisRaw("Vertical");
+        float h = Input.GetAxisRaw("Horizontal");
+        float v = Input.GetAxisRaw("Vertical");
 
-        bool hasInput = (Mathf.Abs(moveX) > 0.1f || Mathf.Abs(moveZ) > 0.1f);
-        bool isSprinting = hasInput && Input.GetKey(KeyCode.LeftShift);
+        bool hasInput = Mathf.Abs(h) > 0.1f || Mathf.Abs(v) > 0.1f;
+        bool sprint = hasInput && Input.GetKey(KeyCode.LeftShift);
 
-        float targetSpeed = isSprinting ? runSpeed : walkSpeed;
+        float speed = sprint ? runSpeed : walkSpeed;
 
-        // Update Animasi
         if (animator != null)
         {
             animator.SetBool("isWalk", hasInput);
-            animator.SetBool("isRun", isSprinting);
+            animator.SetBool("isRun", sprint);
         }
 
-        // Kalkulasi Gerak
-        Vector3 moveDirection = (transform.right * moveX + transform.forward * moveZ).normalized;
-
-        // Kalkulasi Gravitasi
+        Vector3 move = (transform.right * h + transform.forward * v).normalized;
         velocity.y += gravity * Time.deltaTime;
-        if (velocity.y < terminalVelocity) velocity.y = terminalVelocity;
+        velocity.y = Mathf.Max(velocity.y, terminalVelocity);
 
-        Vector3 finalVelocity = (moveDirection * targetSpeed) + velocity;
-        controller.Move(finalVelocity * Time.deltaTime);
+        controller.Move((move * speed + velocity) * Time.deltaTime);
     }
+
+    // ================= HEALTH =================
 
     public void TakeDamage(int amount)
     {
+        if (isDead) return;
+
         health -= amount;
         health = Mathf.Clamp(health, 0, maxHealth);
         UpdateHealthUI();
 
         if (health <= 0)
         {
-            Debug.Log("Player Mati! Memuat GameOverLvl2...");
-
-            // munculin cursor saat mati
-            Cursor.lockState = CursorLockMode.None;
-            Cursor.visible = true;
-
-            SceneManager.LoadScene("GameOverLvl2");
+            Die();
         }
     }
 
     public void Heal(int amount)
     {
-        if (health >= maxHealth) return;
+        if (isDead) return;
+
         health += amount;
         health = Mathf.Clamp(health, 0, maxHealth);
         UpdateHealthUI();
     }
 
-    void UpdateHealthUI()
-{
-    if (healthText != null)
+    void Die()
     {
-        healthText.text = $"Health: {health}%";
+        isDead = true;
+
+        Debug.Log("PLAYER MATI → PINDAH KE GAME OVER");
+
+        // UNLOCK cursor sebelum pindah scene
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+
+        // pastiin game jalan normal
+        Time.timeScale = 1f;
+
+        SceneManager.LoadScene("GameOverLv2");
+    }
+
+    void UpdateHealthUI()
+    {
+        if (healthText == null) return;
+
+        healthText.text = $"HEALTH: {health}%";
+
         if (health > 70) healthText.color = Color.green;
         else if (health > 30) healthText.color = Color.yellow;
         else healthText.color = Color.red;
     }
 
-    // 🔥 beritahu MusicController kalau darah rendah
-    if (MusicController.instance != null)
-    {
-        MusicController.instance.SetLowHealth(health <= 30);
-    }
-}
-
-
-
-    // cursor muncul saat objek diancurin
     void OnDestroy()
     {
         Cursor.lockState = CursorLockMode.None;
