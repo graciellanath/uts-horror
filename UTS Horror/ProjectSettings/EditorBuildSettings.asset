@@ -29,6 +29,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/GameOverLv2.unity
     guid: f8c1dc669ef3cb04486c005ad4e7ea62
+  - enabled: 1
+    path: Assets/Scenes/StorylineMainMenu.unity
+    guid: 555c14118351d98468b3be493c7d9e07
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 6c20cb28c1ad3fb43b91f1aef6242ccd, type: 3}
   m_UseUCBPForAssetBundles: 0
