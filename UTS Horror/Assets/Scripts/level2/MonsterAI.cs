@@ -10,7 +10,7 @@ public class MonsterAI : MonoBehaviour
     public Transform player;
     private Rigidbody rb;
     private MonsterAttack monsterAttack;
-    private MusicController music;
+    // VARIABLE MUSICCONTROLLER SUDAH DIHAPUS
 
     [Header("Patroli")]
     public Transform movePointParent;
@@ -20,7 +20,7 @@ public class MonsterAI : MonoBehaviour
 
     [Header("Parameter Gerak")]
     public float moveSpeed = 2f;
-    public float chaseRange = 10f;
+    public float chaseRange = 10f; // Jarak pandang mata
     public float attackRange = 2f;
     public float rotationSpeed = 5f;
 
@@ -35,18 +35,21 @@ public class MonsterAI : MonoBehaviour
     public bool isChasing = false;
     public bool isAttacking = false;
 
-    // >>> INI FUNGSI PENYELAMAT AGAR MUSIC CONTROLLER TIDAK ERROR <<<
+    // Status logika Box Collider
+    private bool isPlayerInZone = false;
+
+    // Fungsi ini PENTING karena dibaca oleh Level2MusicController
     public bool IsChasing()
     {
         return isChasing;
     }
-    // -------------------------------------------------------------
 
     private void Start()
     {
         rb = GetComponent<Rigidbody>();
         rb.freezeRotation = true;
-        music = MusicController.instance;
+
+        // KODE MUSIC DIHAPUS DARI SINI
 
         if (player == null)
         {
@@ -82,11 +85,8 @@ public class MonsterAI : MonoBehaviour
 
         HandleStates(distance);
 
-        if (music != null)
-        {
-            if (isChasing) music.PlayChase();
-            else music.PlayNormal();
-        }
+        // LOGIKA UPDATE MUSIK DIHAPUS DARI SINI
+        // Biarkan Level2MusicController yang menangani
     }
 
     private void FixedUpdate()
@@ -95,16 +95,40 @@ public class MonsterAI : MonoBehaviour
         HandleMovement();
     }
 
+    // --- LOGIKA TRIGGER BOX COLLIDER (PRIORITAS UTAMA) ---
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            isPlayerInZone = true; // Player Masuk Area
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            isPlayerInZone = false; // Player Keluar Area
+        }
+    }
+
     private void HandleStates(float distanceToPlayer)
     {
         if (isAttacking) return;
 
         bool canSee = CanSeePlayer(distanceToPlayer);
 
-        if (!isChasing && canSee)
+        // 1. Jika Player ada di dalam Box Collider (Zone), PAKSA KEJAR!
+        if (isPlayerInZone)
         {
             isChasing = true;
         }
+        // 2. Jika tidak di Zone, tapi kelihatan mata (Raycast), KEJAR JUGA!
+        else if (canSee)
+        {
+            isChasing = true;
+        }
+        // 3. Jika tidak di Zone DAN tidak kelihatan mata DAN sudah jauh -> STOP KEJAR
         else if (isChasing && (distanceToPlayer > chaseRange * 1.5f))
         {
             isChasing = false;
