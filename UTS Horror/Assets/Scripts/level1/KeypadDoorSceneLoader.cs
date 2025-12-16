@@ -4,16 +4,17 @@ using System.Collections;
 
 public class KeypadDoorSceneLoader : MonoBehaviour
 {
-    public string nextSceneName = "Level2";
+    public string nextSceneName = "StorylineLv2";
 
     public void LoadNextScene()
     {
+        Debug.Log(">>> LOADING STORYLINE LV2 <<<");
         StartCoroutine(LoadDelayed());
     }
 
     IEnumerator LoadDelayed()
     {
-        yield return new WaitForSeconds(1f); // delay animasi pintu
+        yield return new WaitForSeconds(1f);
         SceneManager.LoadScene(nextSceneName);
     }
 }

@@ -1,6 +1,5 @@
 using UnityEngine;
 
-
 public class VaultDoorController : MonoBehaviour
 {
     public Transform door;
@@ -17,6 +16,7 @@ public class VaultDoorController : MonoBehaviour
         targetPos = initialPos + new Vector3(slideDistance, 0, 0);
     }
 
+    // DIPANGGIL OLEH KEYPAD (OnAccessGranted)
     public void OpenDoor()
     {
         shouldOpen = true;
@@ -24,13 +24,12 @@ public class VaultDoorController : MonoBehaviour
 
     void Update()
     {
-        if (shouldOpen)
-        {
-            door.localPosition = Vector3.Lerp(
-                door.localPosition,
-                targetPos,
-                Time.deltaTime * speed
-            );
-        }
+        if (!shouldOpen) return;
+
+        door.localPosition = Vector3.Lerp(
+            door.localPosition,
+            targetPos,
+            Time.deltaTime * speed
+        );
     }
 }
