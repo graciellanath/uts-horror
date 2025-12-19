@@ -330,12 +330,10 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "You wake up alone in a dark, abandoned place. Strange noises echo through
-    the halls. Something feels\u2026 not right.\n\nYour only way forward is to explore
-    the rooms, find hidden clues, and solve puzzles to unlock the door to the next
-    area. But beware\u2026 the house seems alive, and you never know what might be
-    watching.\n\nCan you survive the first challenge and reach the next part of this
-    nightmare?\"\n"
+  m_text: "You wake up alone in a dark, abandoned place. Something feels\u2026 not
+    right.\n\nYour only way forward is to explore the rooms, find hidden clues and
+    unlock the keypad on the door to the next area. \n\nBut beware\u2026 the house
+    seems alive, and you never know what might be watching."
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 2e498d1c8094910479dc3e1b768306a4, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 2e498d1c8094910479dc3e1b768306a4, type: 2}
@@ -886,7 +884,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.05123356, y: 0.16000001}
   m_AnchorMax: {x: 0.95100003, y: 0.23200001}
-  m_AnchoredPosition: {x: 183, y: 4}
+  m_AnchoredPosition: {x: 183, y: 3.9999847}
   m_SizeDelta: {x: 2.0693998, y: -0.38375092}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1501911596
