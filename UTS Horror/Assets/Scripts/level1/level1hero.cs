@@ -2,6 +2,8 @@ using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
 [RequireComponent(typeof(CapsuleCollider))]
+[RequireComponent(typeof(AudioSource))]
+
 public class level1hero : MonoBehaviour
 {
     [Header("Mouse Look Settings")]
@@ -12,6 +14,11 @@ public class level1hero : MonoBehaviour
     [Header("Movement Settings")]
     public float walkSpeed = 2f;
     public float runSpeed = 4f;
+
+    [Header("Audio Settings")]
+    public AudioSource footstepSource;
+    public AudioClip walkClip; // Input Audio 1: Jalan
+    public AudioClip runClip;  // Input Audio 2: Lari
 
     [Header("References")]
     public Transform cam;
@@ -42,6 +49,14 @@ public class level1hero : MonoBehaviour
         if (animator != null)
             animator.applyRootMotion = false;
 
+        // --- SETUP AUDIO ---
+        if (footstepSource == null)
+            footstepSource = GetComponent<AudioSource>();
+
+        // Setting default
+        footstepSource.loop = true;
+        footstepSource.playOnAwake = false;
+
         rotationX = transform.eulerAngles.y;
         if (cam != null)
             rotationY = cam.localEulerAngles.x;
@@ -51,7 +66,6 @@ public class level1hero : MonoBehaviour
 
     void Update()
     {
-        // 🔒 PAKSA CURSOR TETAP ADA (ANTI HILANG)
         ForceCursorVisible();
 
         // ESC → toggle pause
@@ -68,6 +82,7 @@ public class level1hero : MonoBehaviour
         HandleMouseLook();
         HandleInput();
         HandleAnimation();
+        HandleFootsteps(); // Logic audio baru
     }
 
     void FixedUpdate()
@@ -90,7 +105,6 @@ public class level1hero : MonoBehaviour
     // =========================
     void HandleMouseLook()
     {
-        // kamera hanya muter kalau klik kanan
         if (Input.GetMouseButton(1))
         {
             float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity;
@@ -117,6 +131,42 @@ public class level1hero : MonoBehaviour
 
         bool hasMovement = Mathf.Abs(inputH) > 0.1f || Mathf.Abs(inputV) > 0.1f;
         isSprinting = hasMovement && Input.GetKey(KeyCode.LeftShift);
+    }
+
+    // =========================
+    // FOOTSTEP AUDIO (MODIFIED)
+    // =========================
+    void HandleFootsteps()
+    {
+        // Cek apakah ada input gerakan (WASD)
+        bool isMoving = Mathf.Abs(inputH) > 0.1f || Mathf.Abs(inputV) > 0.1f;
+
+        if (isMoving)
+        {
+            // Tentukan klip mana yang harus dipakai (Jalan vs Lari)
+            AudioClip targetClip = isSprinting ? runClip : walkClip;
+
+            // Logika ganti klip:
+            // 1. Jika audio source sedang memainkan klip yang SALAH (misal lagi lari tapi suaranya jalan), GANTI.
+            // 2. Jika audio source sedang TIDAK bunyi, NYALAKAN.
+            if (footstepSource.clip != targetClip)
+            {
+                footstepSource.clip = targetClip;
+                footstepSource.Play();
+            }
+            else if (!footstepSource.isPlaying)
+            {
+                footstepSource.Play();
+            }
+        }
+        else
+        {
+            // Jika diam (tidak ada input), matikan audio
+            if (footstepSource.isPlaying)
+            {
+                footstepSource.Stop();
+            }
+        }
     }
 
     // =========================
@@ -156,6 +206,9 @@ public class level1hero : MonoBehaviour
     {
         isPaused = true;
         Time.timeScale = 0f;
+
+        // Matikan suara langkah kaki saat pause agar tidak berdenging
+        if (footstepSource.isPlaying) footstepSource.Stop();
 
         if (pauseUI != null)
             pauseUI.SetActive(true);
