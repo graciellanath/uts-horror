@@ -3,6 +3,7 @@ using UnityEngine.SceneManagement;
 using TMPro;
 
 [RequireComponent(typeof(CharacterController))]
+[RequireComponent(typeof(AudioSource))]
 public class playerfps : MonoBehaviour
 {
     [Header("Mouse Look Settings")]
@@ -15,6 +16,11 @@ public class playerfps : MonoBehaviour
     public float runSpeed = 4f;
     public float gravity = -9.81f;
     private float terminalVelocity = -20f;
+
+    [Header("Audio Settings")]
+    public AudioSource footstepSource;
+    public AudioClip walkClip;         // Audio Jalan
+    public AudioClip runClip;          // Audio Lari
 
     [Header("Health Settings")]
     public int maxHealth = 100;
@@ -37,9 +43,16 @@ public class playerfps : MonoBehaviour
         cameraTransform = GetComponentInChildren<Camera>().transform;
         animator = GetComponentInChildren<Animator>();
 
-        // LOCK cursor saat main
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
+        // --- SETUP AUDIO ---
+        if (footstepSource == null)
+            footstepSource = GetComponent<AudioSource>();
+
+        footstepSource.loop = true;
+        footstepSource.playOnAwake = false;
+
+        // --- SETUP CURSOR (REVISI: TIDAK DI-LOCK) ---
+        Cursor.lockState = CursorLockMode.None; // Kursor bebas gerak
+        Cursor.visible = true;                  // Kursor terlihat
 
         health = maxHealth;
         UpdateHealthUI();
@@ -50,14 +63,30 @@ public class playerfps : MonoBehaviour
 
     void Update()
     {
-        if (Time.timeScale == 0f || isDead) return;
+        if (isDead) return;
+
+        // Jika Pause (TimeScale 0), stop audio dan return
+        if (Time.timeScale == 0f)
+        {
+            if (footstepSource.isPlaying) footstepSource.Stop();
+            return;
+        }
+
+        // Pastikan kursor selalu muncul (Safety)
+        if (Cursor.visible == false)
+        {
+            Cursor.visible = true;
+            Cursor.lockState = CursorLockMode.None;
+        }
 
         HandleMouseLook();
         HandleMovement();
+        HandleFootsteps();
     }
 
     void HandleMouseLook()
     {
+        // Logika rotasi: Hanya putar kalau Klik Kanan Ditekan
         if (Input.GetMouseButtonDown(1)) isLooking = true;
         if (Input.GetMouseButtonUp(1)) isLooking = false;
 
@@ -100,6 +129,40 @@ public class playerfps : MonoBehaviour
         controller.Move((move * speed + velocity) * Time.deltaTime);
     }
 
+    // ================= AUDIO FOOTSTEPS =================
+
+    void HandleFootsteps()
+    {
+        float h = Input.GetAxisRaw("Horizontal");
+        float v = Input.GetAxisRaw("Vertical");
+
+        // Cek bergerak dan menapak tanah
+        bool isMoving = (Mathf.Abs(h) > 0.1f || Mathf.Abs(v) > 0.1f) && controller.isGrounded;
+        bool isSprinting = isMoving && Input.GetKey(KeyCode.LeftShift);
+
+        if (isMoving)
+        {
+            AudioClip targetClip = isSprinting ? runClip : walkClip;
+
+            if (footstepSource.clip != targetClip)
+            {
+                footstepSource.clip = targetClip;
+                footstepSource.Play();
+            }
+            else if (!footstepSource.isPlaying)
+            {
+                footstepSource.Play();
+            }
+        }
+        else
+        {
+            if (footstepSource.isPlaying)
+            {
+                footstepSource.Stop();
+            }
+        }
+    }
+
     // ================= HEALTH =================
 
     public void TakeDamage(int amount)
@@ -128,17 +191,14 @@ public class playerfps : MonoBehaviour
     void Die()
     {
         isDead = true;
-
         Debug.Log("PLAYER MATI → PINDAH KE GAME OVER");
 
-        // UNLOCK cursor sebelum pindah scene
+        // Pastikan kursor bebas
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
 
-        // pastiin game jalan normal
         Time.timeScale = 1f;
-
-        SceneManager.LoadScene("GameOverLv2");
+        SceneManager.LoadScene("GameOverLvl2");
     }
 
     void UpdateHealthUI()
