@@ -6,15 +6,28 @@ public class KeypadDoorSceneLoader : MonoBehaviour
 {
     public string nextSceneName = "StorylineLv2";
 
-    public void LoadNextScene()
-    {
-        Debug.Log(">>> LOADING STORYLINE LV2 <<<");
-        StartCoroutine(LoadDelayed());
-    }
+    private bool isLoading = false;
 
-    IEnumerator LoadDelayed()
-    {
-        yield return new WaitForSeconds(1f);
-        SceneManager.LoadScene(nextSceneName);
-    }
+    public void LoadNextScene()
+{
+    if (isLoading) return;
+    isLoading = true;
+
+    Debug.Log(">>> LOADING STORYLINE LV2 <<<");
+
+    StartCoroutine(LoadAndDisable());
+}
+
+
+
+IEnumerator LoadAndDisable()
+{
+    yield return null;
+
+    Debug.Log("🔥 ABOUT TO LOAD: " + nextSceneName);
+
+    SceneManager.LoadScene(nextSceneName, LoadSceneMode.Single);
+}
+
+
 }
