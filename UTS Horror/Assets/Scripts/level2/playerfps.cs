@@ -198,7 +198,7 @@ public class playerfps : MonoBehaviour
         Cursor.visible = true;
 
         Time.timeScale = 1f;
-        SceneManager.LoadScene("GameOverLvl2");
+        SceneManager.LoadScene("GameOverLv2");
     }
 
     void UpdateHealthUI()
