@@ -391,7 +391,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.7863098, y: 0.08713044}
   m_AnchorMax: {x: 0.96400005, y: 0.2371667}
-  m_AnchoredPosition: {x: 5, y: -7.996956}
+  m_AnchoredPosition: {x: 5, y: -7.9969635}
   m_SizeDelta: {x: 43, y: -33}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &467359646
@@ -1349,7 +1349,7 @@ MonoBehaviour:
       m_Calls: []
   m_text: "W / A / S / D \u2014 Move\nLeft Mouse Hold \u2014 Look Around\nE \u2014
     Interact (pick up items, open doors)\nShift \u2014 Sprint\nF \u2014 Flashlight
-    On"
+    On\nRight Click \u2014 Enter codes on keypad"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8b3bcd1833a406f478e125db01fc0b6d, type: 2}
   m_sharedMaterial: {fileID: 5608202080528317625, guid: 8b3bcd1833a406f478e125db01fc0b6d, type: 2}
