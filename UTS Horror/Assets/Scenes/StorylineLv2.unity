@@ -305,11 +305,11 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 1742764161}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -1.6571655, y: -46}
-  m_SizeDelta: {x: 200, y: 50}
-  m_Pivot: {x: 1.0557141, y: 1.8995765}
+  m_AnchorMin: {x: 0.21950385, y: 0.30058494}
+  m_AnchorMax: {x: 0.7782482, y: 0.63545287}
+  m_AnchoredPosition: {x: 0.5, y: 0.6398926}
+  m_SizeDelta: {x: -0.24160004, y: -0.06760025}
+  m_Pivot: {x: 0.5, y: 0.50000006}
 --- !u!114 &869985142
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -359,12 +359,12 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 12
+  m_fontSize: 16.2
   m_fontSizeBase: 12
   m_fontWeight: 400
-  m_enableAutoSizing: 0
-  m_fontSizeMin: 18
-  m_fontSizeMax: 72
+  m_enableAutoSizing: 1
+  m_fontSizeMin: 0
+  m_fontSizeMax: 40
   m_fontStyle: 0
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 256
@@ -377,7 +377,7 @@ MonoBehaviour:
   m_charWidthMaxAdj: 0
   m_TextWrappingMode: 1
   m_wordWrappingRatios: 0.4
-  m_overflowMode: 0
+  m_overflowMode: 3
   m_linkedTextComponent: {fileID: 0}
   parentLinkedComponent: {fileID: 0}
   m_enableKerning: 0
@@ -397,7 +397,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0, y: -104.51633, z: -247.17313, w: 0}
+  m_margin: {x: 0, y: -0.15982056, z: -0.9090271, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
@@ -445,7 +445,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 30, y: 19}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1056203248
@@ -495,12 +495,12 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 15
-  m_fontSizeBase: 15
+  m_fontSize: 34.1
+  m_fontSizeBase: 26.6
   m_fontWeight: 400
-  m_enableAutoSizing: 0
-  m_fontSizeMin: 18
-  m_fontSizeMax: 72
+  m_enableAutoSizing: 1
+  m_fontSizeMin: 0
+  m_fontSizeMax: 40
   m_fontStyle: 8
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
@@ -513,7 +513,7 @@ MonoBehaviour:
   m_charWidthMaxAdj: 0
   m_TextWrappingMode: 1
   m_wordWrappingRatios: 0.4
-  m_overflowMode: 0
+  m_overflowMode: 3
   m_linkedTextComponent: {fileID: 0}
   parentLinkedComponent: {fileID: 0}
   m_enableKerning: 0
@@ -883,10 +883,10 @@ RectTransform:
   - {fileID: 1056203247}
   m_Father: {fileID: 1742764161}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.05123356, y: 0.16000001}
-  m_AnchorMax: {x: 0.95100003, y: 0.23200001}
-  m_AnchoredPosition: {x: 183, y: 4}
-  m_SizeDelta: {x: 2.0693998, y: -0.38375092}
+  m_AnchorMin: {x: 0.7414885, y: 0.16000001}
+  m_AnchorMax: {x: 0.8851241, y: 0.26954716}
+  m_AnchoredPosition: {x: -1.8999939, y: 0.21488953}
+  m_SizeDelta: {x: 2.1624146, y: 0.42980003}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1501911596
 MonoBehaviour:
