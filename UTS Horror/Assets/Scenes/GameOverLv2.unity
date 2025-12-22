@@ -234,7 +234,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.05123356, y: 0.34800002}
   m_AnchorMax: {x: 0.95100003, y: 0.432}
-  m_AnchoredPosition: {x: 2.3367004, y: 0.38375092}
+  m_AnchoredPosition: {x: 2.33667, y: 0.38375092}
   m_SizeDelta: {x: 2.9700928, y: -0.76750183}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &360927154
@@ -585,7 +585,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 7, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1056203248
@@ -635,11 +635,11 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 20
+  m_fontSize: 33.55
   m_fontSizeBase: 20
   m_fontWeight: 400
-  m_enableAutoSizing: 0
-  m_fontSizeMin: 18
+  m_enableAutoSizing: 1
+  m_fontSizeMin: 0
   m_fontSizeMax: 72
   m_fontStyle: 8
   m_HorizontalAlignment: 2
@@ -653,7 +653,7 @@ MonoBehaviour:
   m_charWidthMaxAdj: 0
   m_TextWrappingMode: 1
   m_wordWrappingRatios: 0.4
-  m_overflowMode: 0
+  m_overflowMode: 3
   m_linkedTextComponent: {fileID: 0}
   parentLinkedComponent: {fileID: 0}
   m_enableKerning: 0
@@ -890,10 +890,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 1742764161}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.046536077, y: 0.57369596}
-  m_AnchorMax: {x: 0.96250564, y: 0.737848}
-  m_AnchoredPosition: {x: 2.1140137, y: -10}
-  m_SizeDelta: {x: -8.228088, y: 2.433998}
+  m_AnchorMin: {x: 0.05123356, y: 0.54650027}
+  m_AnchorMax: {x: 0.9601807, y: 0.717}
+  m_AnchoredPosition: {x: 1.1140137, y: 1.5}
+  m_SizeDelta: {x: -2.2280884, y: -0.5660019}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1489131412
 MonoBehaviour:
@@ -942,11 +942,11 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 70
+  m_fontSize: 72
   m_fontSizeBase: 70
   m_fontWeight: 400
-  m_enableAutoSizing: 0
-  m_fontSizeMin: 18
+  m_enableAutoSizing: 1
+  m_fontSizeMin: 0
   m_fontSizeMax: 72
   m_fontStyle: 0
   m_HorizontalAlignment: 2
@@ -960,7 +960,7 @@ MonoBehaviour:
   m_charWidthMaxAdj: 0
   m_TextWrappingMode: 1
   m_wordWrappingRatios: 0.4
-  m_overflowMode: 0
+  m_overflowMode: 3
   m_linkedTextComponent: {fileID: 0}
   parentLinkedComponent: {fileID: 0}
   m_enableKerning: 0
@@ -1028,10 +1028,10 @@ RectTransform:
   - {fileID: 1056203247}
   m_Father: {fileID: 1742764161}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.05123356, y: 0.16000001}
-  m_AnchorMax: {x: 0.95100003, y: 0.23200001}
-  m_AnchoredPosition: {x: 0, y: 19}
-  m_SizeDelta: {x: 2.0693998, y: -0.38375092}
+  m_AnchorMin: {x: 0.05123356, y: 0.202}
+  m_AnchorMax: {x: 0.95100003, y: 0.27119994}
+  m_AnchoredPosition: {x: 0.4258423, y: -0.5}
+  m_SizeDelta: {x: -0.85168, y: 0.6162}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1501911596
 MonoBehaviour:
@@ -1161,7 +1161,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 7, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1551363822
@@ -1211,11 +1211,11 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 20
+  m_fontSize: 39.2
   m_fontSizeBase: 20
   m_fontWeight: 400
-  m_enableAutoSizing: 0
-  m_fontSizeMin: 18
+  m_enableAutoSizing: 1
+  m_fontSizeMin: 0
   m_fontSizeMax: 72
   m_fontStyle: 0
   m_HorizontalAlignment: 2
@@ -1229,7 +1229,7 @@ MonoBehaviour:
   m_charWidthMaxAdj: 0
   m_TextWrappingMode: 1
   m_wordWrappingRatios: 0.4
-  m_overflowMode: 0
+  m_overflowMode: 3
   m_linkedTextComponent: {fileID: 0}
   parentLinkedComponent: {fileID: 0}
   m_enableKerning: 0
@@ -1249,7 +1249,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0, y: 0, z: 0, w: 0}
+  m_margin: {x: -0.63357544, y: 0, z: 0.63342285, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
